@@ -21,7 +21,7 @@ secrets, dep counts across npm/pip/go/ruby/php/rust/java) plus deep JS/TS rules.
 Repo: https://github.com/YOURUSER/costlens
 npm: npx costlens scan .
 
-I also offer a paid deep audit ($199/$499) where I fix the top leaks and open PRs —
+I also offer paid audits (Scout $29, Probe $99, Investigate $199, Architect $2000) where I fix the top leaks and open PRs —
 but the scanner is free and MIT. Feedback on false positives welcome; that's the
 biggest risk with heuristic scanning.
 ```
@@ -46,7 +46,7 @@ Body: General.
 
 ### r/indiehackers
 Title: I shipped a free cost-leak scanner for vibe-coded apps — looking for first audit customers
-Body: Include the $199 audit offer and the savings guarantee. IndieHackers allows self-promo in milestones.
+Body: Include the tiered audit offer (Scout $29 / Probe $99 / Investigate $199 / Architect $2000) and the savings guarantee. IndieHackers allows self-promo in milestones.
 
 ### r/ExperiencedDevs
 Title: Heuristic codebase cost scanner — looking for feedback on rule quality
@@ -65,7 +65,7 @@ Body: Supabase-specific.
 3/ Each finding ships a "fix prompt" you paste into Claude Code / Cursor to auto-apply. There's a combined Agent Fix Block at the end.
 4/ Catches: N+1 queries, uncached fetches, heavy deps in bundles, Supabase select("*"), raw <img>, committed binaries/secrets, dep bloat across npm/pip/go/ruby/php/rust/java.
 5/ Rules are pluggable JS modules. PRs welcome.
-6/ Free & MIT. If you want me to actually fix the leaks: deep audit $199/$499 with a savings guarantee. Link in bio.
+6/ Free & MIT. If you want me to actually fix the leaks: audits from $29 to $2000 with a savings guarantee. Link in bio.
 [attach demo GIF]
 
 ---
@@ -76,7 +76,7 @@ Body: Supabase-specific.
 > Hey {name}, saw you're building {product}. I built a free scanner that finds cloud cost leaks (N+1, uncached fetches, heavy bundles, Supabase leaks) and writes fix prompts for Claude/Cursor. Happy to run it on your repo and send the report — no charge. Want me to?
 
 **Template B — if they engage:**
-> Ran it on your repo (with your permission). Found {N} leaks, top one saves ~${X}/mo. Full report attached. If you want me to actually fix the top 3 and open PRs, I do a deep audit ($199 std / $499 with PRs + 30-day follow-up, savings guaranteed). Either way, the report is yours.
+> Ran it on your repo (with your permission). Found {N} leaks, top one saves ~${X}/mo. Full report attached. If you want me to actually fix the top 3 and open PRs, I do a tiered audit (Investigate $199 with PRs for top 3, Architect $2000 with full architecture review + 30-day follow-up + savings guarantee). Either way, the report is yours.
 
 **Rules:** Only DM people you can personalize for. Never send the same message twice. 20 DMs/day max to avoid LinkedIn limits.
 
@@ -100,11 +100,13 @@ What I check:
 Deliverables:
 - Markdown audit report (file:line references)
 - Prioritized fix list with effort + expected savings
-- For the Deep tier: I open PRs for the top fixes
+- PRs for top fixes on Investigate and Architect tiers
 
 Tiers:
-- Standard $199 — report + fix list + cost estimate (24-48h)
-- Deep $499 — above + PRs for top fixes + 30-day follow-up + savings guarantee
+- Scout $29 — CostLens agent skill + curated fix templates + benchmark data + advanced rules (self-serve)
+- Probe $99 — Everything in Scout + full cloud cost audit (IAM-based preferred, CSV fallback). Top-5 waste categories with $ estimates, right-sizing recs, RI/SP suggestions. 48h turnaround.
+- Investigate $199 — Everything in Probe + code↔cloud correlation + DB query review (N+1, indexes, unbounded queries) + PRs for top 3 fixes.
+- Architect $2000 — Everything in Investigate + full architecture review (cost, latency, throughput) + PRs for top fixes + 30-day follow-up + 1h call + savings guarantee.
 
 Tools: I use a custom scanner (CostLens) plus manual review. You keep all code.
 
@@ -112,28 +114,23 @@ Tools: I use a custom scanner (CostLens) plus manual review. You keep all code.
 
 ---
 
-## 6. Gumroad product page copy (Deep Audit)
+## 6. Gumroad product page copy (Codebase Cost Audit)
 
-**Title:** Deep Codebase Cost Audit — $199 / $499
+**Title:** Codebase Cost Audit — Scout $29 · Probe $99 · Investigate $199 · Architect $2000
 
 **Description:**
 Your app ships fast. Your cloud bill ships faster. I'll find the leaks and fix them.
 
-What you get (Standard, $199):
-- Full automated scan + manual review of your repo
-- Prioritized fix list with effort estimate for each
-- Before/after cloud cost projection
-- Delivered as a markdown report in 24-48h
-
-Deep ($499) adds:
-- I open PRs for the top fixes (you review & merge)
-- 30-day follow-up to verify savings
-- Savings guarantee: if I don't find ≥$200/mo in savings, full refund
+What you get:
+- **Scout ($29):** CostLens agent skill + curated fix templates + benchmark data + advanced rules. Self-serve.
+- **Probe ($99):** Everything in Scout + full cloud cost audit (IAM-based preferred, CSV fallback). Top-5 waste categories with $ estimates, right-sizing recs, RI/SP suggestions. 48h turnaround.
+- **Investigate ($199):** Everything in Probe + code↔cloud correlation + DB query review (N+1, indexes, unbounded queries) + PRs for top 3 fixes.
+- **Architect ($2000):** Everything in Investigate + full architecture review (cost, latency, throughput) + PRs for top fixes + 30-day follow-up + 1h call + savings guarantee.
 
 How it works:
 1. Buy → you get an intake form (repo access method).
 2. I audit.
-3. You receive the report (+ PRs on Deep).
+3. You receive the report (+ PRs on Investigate/Architect).
 4. You merge, deploy, watch the bill drop.
 
 Stacks I know best: Next.js, Supabase, Vercel, Node, Python. Other stacks on request.
@@ -141,7 +138,7 @@ Stacks I know best: Next.js, Supabase, Vercel, Node, Python. Other stacks on req
 **FAQ:**
 - Do you need prod access? No. Read-only repo access (GitHub invite or zip) is enough.
 - Is my code safe? Yes — I don't store or share it; report only.
-- What if savings < $200/mo? Full refund on Deep tier.
+- What if savings < $200/mo? Full refund on the Architect tier.
 
 ---
 
@@ -160,6 +157,6 @@ For each: severity, file:line, problem, fix, effort (S/M/L), estimated savings, 
 ## Quick wins (do this week)
 ## Medium effort
 ## Larger refactors
-## What I changed (Deep tier: PR links)
+## What I changed (Investigate/Architect tier: PR links)
 ## Verification plan (how to confirm savings)
 ## Next steps
