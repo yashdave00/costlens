@@ -1,5 +1,6 @@
 // Bundle size: large client components, heavy imports in client bundles.
 export const name = "bundle";
+const BEFORE_AFTER = { before: "Large client bundle", after: "Tree-shaken bundle", savingsUsd: 60, savingsPct: "20-50% bundle reduction" };
 const CODE_EXTS = [".js", ".jsx", ".ts", ".tsx"];
 
 const HEAVY_CLIENT_IMPORTS = ["lodash", "moment", "chart.js", "d3", "three", "xlsx", "pdf-lib", "firebase", "aws-sdk"];
@@ -30,6 +31,7 @@ export async function run({ root, files, fileContents }) {
       detail: [...byFile.entries()].map(([f, libs]) => `- ${f} — ${libs.join(", ")}`).join("\n"),
       files: [...byFile.keys()].map((p) => ({ path: p, line: 1 })),
       savings: "Moving heavy libs server-side or code-splitting can cut client JS 50-90%.",
+      beforeAfter: BEFORE_AFTER,
       fixPrompt: `These client components import heavy libs: ${[...byFile.entries()].map(([f, l]) => f + " (" + l.join(",") + ")").join("; ")}. Move to server components, dynamic import, or lighter alternatives.`,
     });
   }
@@ -49,6 +51,7 @@ export async function run({ root, files, fileContents }) {
       detail: bigFiles.map((f) => `- ${f.path} (${f.lines} lines)`).join("\n"),
       files: bigFiles.map((f) => ({ path: f.path, line: 1 })),
       savings: "Splitting reduces bundle parse time and improves tree-shaking.",
+      beforeAfter: BEFORE_AFTER,
       fixPrompt: `Split these large files into smaller modules/components: ${bigFiles.map((f) => f.path).join(", ")}.`,
     });
   }
@@ -68,6 +71,7 @@ export async function run({ root, files, fileContents }) {
         "\n\n`export *` can defeat tree-shaking in some bundlers, pulling in unused code.",
       files: barrelHits.map((p) => ({ path: p, line: 1 })),
       savings: "Named exports improve tree-shaking, shrinking bundles.",
+      beforeAfter: BEFORE_AFTER,
       fixPrompt: `Replace \`export * from\` with explicit named exports in: ${barrelHits.join(", ")}.`,
     });
   }

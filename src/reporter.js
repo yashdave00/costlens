@@ -1,14 +1,18 @@
+import { detectCurrency, formatCurrency } from "./currency.js";
+
 const SEV_ORDER = ["critical", "high", "medium", "low", "info"];
 const SEV_EMOJI = { critical: "🔴", high: "🟠", medium: "🟡", low: "🔵", info: "⚪" };
 
 export function renderReport(result) {
   const { root, fileCount, findings, summary } = result;
+  const currency = detectCurrency();
   const lines = [];
   lines.push(`# CostLens Report`);
   lines.push("");
   lines.push(`**Project:** \`${root}\``);
   lines.push(`**Files scanned:** ${fileCount}`);
   lines.push(`**Findings:** ${findings.length}  (${SEV_ORDER.map((s) => `${s}: ${summary[s] || 0}`).join(", ")})`);
+  lines.push(`**Currency:** ${currency.code} (detected from ${currency.timezone})`);
   lines.push("");
 
   if (findings.length === 0) {
@@ -28,6 +32,16 @@ export function renderReport(result) {
       lines.push(f.detail);
       lines.push("");
       if (f.savings) lines.push(`**Estimated impact:** ${f.savings}`);
+      if (f.beforeAfter) {
+        lines.push("");
+        lines.push(`**Before → After:** ${f.beforeAfter.before} → ${f.beforeAfter.after}`);
+        if (f.beforeAfter.savingsUsd) {
+          lines.push(`**Estimated savings:** ${formatCurrency(f.beforeAfter.savingsUsd, currency)}/mo`);
+        }
+        if (f.beforeAfter.savingsPct) {
+          lines.push(`**Reduction:** ${f.beforeAfter.savingsPct}`);
+        }
+      }
       if (f.files && f.files.length > 0) {
         lines.push("");
         lines.push("**Locations:**");

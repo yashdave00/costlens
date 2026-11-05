@@ -1,5 +1,6 @@
 // Cross-language dependency manifest analysis: counts deps and flags heavy ones.
 export const name = "manifests";
+const BEFORE_AFTER = { before: "High dep count", after: "Pruned deps", savingsUsd: 30, savingsPct: "20-30% fewer deps" };
 
 const MANIFESTS = [
   { file: "package.json", type: "npm" },
@@ -106,6 +107,7 @@ export async function run({ root, files, fileContents }) {
         detail: hits.map((h) => `- **${h.name}** → ${h.alt}. ${h.reason}`).join("\n"),
         files: [{ path: m.file, line: 1 }],
         savings: "Lighter alternatives reduce install size, memory, and cold starts.",
+        beforeAfter: BEFORE_AFTER,
         fixPrompt: `Replace heavy dependencies in ${m.file}: ${hits.map((h) => h.name + " -> " + h.alt).join("; ")}.`,
       });
     }
@@ -120,6 +122,7 @@ export async function run({ root, files, fileContents }) {
         detail: `${m.file} declares ${deps.length} dependencies. Large graphs increase install/build time, supply-chain risk, and (for serverless) bundle size.`,
         files: [{ path: m.file, line: 1 }],
         savings: "Pruning 20-30% of deps typically cuts build minutes and cold starts.",
+        beforeAfter: BEFORE_AFTER,
         fixPrompt: `Audit ${m.file}: remove unused deps, prefer stdlib/native APIs, consolidate duplicates.`,
       });
     }

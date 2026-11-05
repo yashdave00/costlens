@@ -13,11 +13,12 @@ import * as serverless from "./rules/serverless.js";
 import * as heavyDeps from "./rules/heavy-deps.js";
 import * as generalBloat from "./rules/general-bloat.js";
 import * as manifests from "./rules/manifests.js";
+import * as docker from "./rules/docker.js";
 
-const RULES = [generalBloat, manifests, depBloat, heavyDeps, nPlusOne, caching, images, bundle, supabase, serverless];
+const RULES = [generalBloat, manifests, depBloat, heavyDeps, nPlusOne, caching, images, bundle, supabase, serverless, docker];
 
-const CODE_EXTS = new Set([".js", ".jsx", ".ts", ".tsx", ".mjs", ".cjs"]);
-const ALL_EXTS = new Set([...CODE_EXTS, ".json", ".md", ".css", ".html", ".env"]);
+const CODE_EXTS = new Set([".js", ".jsx", ".ts", ".tsx", ".mjs", ".cjs", ".go", ".py", ".php", ".rb", ".rs", ".java", ".cs", ".kt", ".swift", ".scala", ".c", ".cpp", ".h", ".hpp"]);
+const ALL_EXTS = new Set([...CODE_EXTS, ".json", ".md", ".css", ".html", ".env", ".toml", ".yaml", ".yml", ".cfg", ".ini", ".txt", ".xml", ".gradle", ".properties", ".lock", ".mod", ".sum"]);
 
 export async function scan(root) {
   const files = await glob("**/*", {
@@ -30,7 +31,8 @@ export async function scan(root) {
   const fileContents = new Map();
   for (const f of files) {
     const ext = extname(f);
-    if (!ALL_EXTS.has(ext) && !f.endsWith(".env") && !f.endsWith(".env.local")) continue;
+    const isDockerfile = /(^|\/)Dockerfile(\.|$)/i.test(f) || f.toLowerCase().endsWith(".dockerfile");
+    if (!ALL_EXTS.has(ext) && !isDockerfile && !f.endsWith(".env") && !f.endsWith(".env.local")) continue;
     try {
       const full = join(root, f);
       const s = await stat(full);

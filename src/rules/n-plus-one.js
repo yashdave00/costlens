@@ -1,5 +1,6 @@
 // Detects DB/ORM calls inside loops — classic N+1 cost multiplier.
 export const name = "n-plus-one";
+const BEFORE_AFTER = { before: "N+1 queries (10-1000x DB calls)", after: "Batched queries (1-2 calls)", savingsUsd: 150, savingsPct: "90-99% fewer DB calls" };
 const CODE_EXTS = [".js", ".jsx", ".ts", ".tsx", ".mjs", ".cjs", ".py", ".go", ".rb", ".php"];
 
 const DB_CALL_RE = /(supabase|prisma|db|database|knex|sequelize|mongoose|mongo|redis|sql|query|execute|fetch)\s*\.\s*(from|select|find|findOne|findMany|query|execute|get|getAll|list|search|rpc|insert|update|delete)\b/gi;
@@ -45,6 +46,7 @@ export async function run({ root, files, fileContents }) {
         "\n\nDB calls inside loops multiply query count with data size → latency and cost (especially Supabase/managed DB egress and compute).",
       files: uniq.slice(0, 25).map((h) => ({ path: h.path, line: h.line })),
       savings: "Batching/Joining often cuts DB calls 10-1000x and egress cost proportionally.",
+      beforeAfter: BEFORE_AFTER,
       fixPrompt: `Fix these N+1 patterns by batching queries (use .in() / whereIn, or a single join). Files: ${uniq.slice(0, 25).map((h) => h.path + ":" + h.line).join(", ")}. Convert looped single-row fetches into one batched query.`,
     });
   }

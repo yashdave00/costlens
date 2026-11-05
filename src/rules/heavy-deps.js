@@ -1,5 +1,6 @@
 // Flags known heavy dependencies and suggests lighter alternatives.
 export const name = "heavy-deps";
+const BEFORE_AFTER = { before: "Full heavy dep bundle", after: "Lightweight alternative", savingsUsd: 50, savingsPct: "20-60% bundle reduction" };
 
 const HEAVY = [
   { name: "moment", alt: "date-fns or dayjs", reason: "moment is ~300KB and not tree-shakeable" },
@@ -34,6 +35,7 @@ export async function run({ root, files, fileContents }) {
     detail: hits.map((h) => `- **${h.name}** → ${h.alt}. ${h.reason}`).join("\n"),
     files: [{ path: "package.json", line: 1 }],
     savings: "Swapping heavy deps commonly shrinks bundles 20-60% and reduces cold starts.",
+    beforeAfter: BEFORE_AFTER,
     fixPrompt: `Replace these heavy dependencies with lighter alternatives: ${hits.map((h) => h.name + " -> " + h.alt).join("; ")}. Update imports across the codebase, then rebuild and compare bundle size.`,
   });
 

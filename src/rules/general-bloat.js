@@ -1,5 +1,6 @@
 // Language-agnostic bloat checks: large files, committed binaries, secrets, duplicate assets.
 export const name = "general-bloat";
+const BEFORE_AFTER = { before: "Bloated repo", after: "Lean repo", savingsUsd: 15, savingsPct: "30-90% repo size reduction" };
 
 const BINARY_EXT = new Set([
   ".png", ".jpg", ".jpeg", ".gif", ".webp", ".avif", ".ico", ".mp4", ".mov", ".mp3", ".wav",
@@ -30,6 +31,7 @@ export async function run({ root, files, fileContents }) {
         "\n\nLarge blobs bloat clones, CI, and (if under public/) get served to browsers. Move to object storage / CDN or git-lfs.",
       files: large.map((f) => ({ path: f.path, line: 1 })),
       savings: "Removing 10MB of blobs typically cuts clone/CI time 30-60%.",
+      beforeAfter: BEFORE_AFTER,
       fixPrompt: `Move these large files out of the repo (to S3/R2/CDN or git-lfs): ${large.map((f) => f.path).join(", ")}. Update references. Add them to .gitignore.`,
     });
   }
@@ -38,9 +40,9 @@ export async function run({ root, files, fileContents }) {
   const binInSrc = files.filter((f) => {
     const ext = f.slice(f.lastIndexOf(".")).toLowerCase();
     if (!BINARY_EXT.has(ext)) return false;
-    // allow public/, assets/, static/, images/ dirs
-    if (/(^|\/)(public|assets|static|images|img|media)\//.test(f)) return false;
-    if (/(^|\/)node_modules\//.test(f)) return false;
+    // allow public/, assets/, static/, images/, docs/ dirs and vendored assets
+    if (/(^|\/)(public|assets|static|images|img|media|docs|doc|vendor)\//.test(f)) return false;
+    if (/(^|\/)(node_modules|tests?|spec|fixtures?|__tests__)\//.test(f)) return false;
     return true;
   });
   if (binInSrc.length > 0) {
@@ -51,6 +53,7 @@ export async function run({ root, files, fileContents }) {
       detail: binInSrc.slice(0, 20).map((f) => `- ${f}`).join("\n") + (binInSrc.length > 20 ? `\n...and ${binInSrc.length - 20} more` : ""),
       files: binInSrc.slice(0, 20).map((f) => ({ path: f, line: 1 })),
       savings: "Keeps repo lean; binaries don't diff well and slow clones.",
+      beforeAfter: BEFORE_AFTER,
       fixPrompt: `Move these binary files into an assets/public directory or to object storage: ${binInSrc.slice(0, 20).join(", ")}.`,
     });
   }
@@ -73,6 +76,7 @@ export async function run({ root, files, fileContents }) {
         "\n\nCommitted secrets = breach risk + forced rotation cost. Also bloats history permanently.",
       files: secretHits.map((f) => ({ path: f, line: 1 })),
       savings: "Avoids breach/incident cost (often $$$$).",
+      beforeAfter: BEFORE_AFTER,
       fixPrompt: `Remove secrets from these files and rotate the credentials immediately: ${secretHits.join(", ")}. Move to env vars / secret manager and add to .gitignore. Use git filter-repo to purge history.`,
     });
   }
@@ -92,12 +96,15 @@ export async function run({ root, files, fileContents }) {
       detail: dupes.slice(0, 15).map((d) => `- ${d}`).join("\n"),
       files: [],
       savings: "Often indicates copy-paste duplication; dedup reduces maintenance + bundle.",
+      beforeAfter: BEFORE_AFTER,
       fixPrompt: `Review these repeatedly-named files for duplication: ${dupes.slice(0, 15).join(", ")}. Extract shared components/utilities.`,
     });
   }
 
   // 5. Committed node_modules / vendor / .git
-  const badDirs = files.filter((f) => /(^|\/)(node_modules|vendor|\.git|__pycache__|\.venv|venv|target|dist|build)\//.test(f));
+  // Only flag these at the repo root (or one level deep) — not vendored assets
+  // inside static/ or docs/, which are legitimate.
+  const badDirs = files.filter((f) => /^(node_modules|vendor|\.git|__pycache__|\.venv|venv|target|dist|build)\//.test(f));
   if (badDirs.length > 5) {
     findings.push({
       rule: name,
@@ -106,6 +113,7 @@ export async function run({ root, files, fileContents }) {
       detail: `Found committed files under node_modules/vendor/.git/__pycache__/.venv/target/dist/build. This bloats the repo massively.`,
       files: badDirs.slice(0, 10).map((f) => ({ path: f, line: 1 })),
       savings: "Can shrink repo by 90%+.",
+      beforeAfter: BEFORE_AFTER,
       fixPrompt: `Add these to .gitignore and remove from git tracking: node_modules, vendor, .git (nested), __pycache__, .venv, target, dist, build. Run git rm -r --cached.`,
     });
   }

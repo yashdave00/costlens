@@ -1,5 +1,6 @@
 // Detects dependencies declared in package.json that are never imported in source.
 export const name = "dep-bloat";
+const BEFORE_AFTER = { before: "Unused dependencies", after: "Pruned dependencies", savingsUsd: 25, savingsPct: "10-40% smaller install" };
 const CODE_EXTS = [".js", ".jsx", ".ts", ".tsx", ".mjs", ".cjs"];
 
 export async function run({ root, files, fileContents }) {
@@ -41,6 +42,7 @@ export async function run({ root, files, fileContents }) {
       detail: `These packages are declared in package.json but no import/require was found in scanned source. Unused deps inflate install size, bundle size, and (on Vercel) function bundle size → higher cold-start and build minutes.\n\n${unused.map((d) => `- ${d}`).join("\n")}`,
       files: [{ path: "package.json", line: 1 }],
       savings: "Removes dead weight from node_modules and serverless bundles; often 10-40% smaller functions.",
+      beforeAfter: BEFORE_AFTER,
       fixPrompt: `Audit these dependencies: ${unused.join(", ")}. For each, confirm it's truly unused (check config files, scripts, dynamic imports). Remove unused ones from package.json and reinstall. Then run the build to confirm nothing breaks.`,
     });
   }
@@ -54,6 +56,7 @@ export async function run({ root, files, fileContents }) {
       detail: `Large dependency graphs increase install time, supply-chain risk, and bundle size. Vibe-coded apps often accumulate deps from copy-pasted snippets.`,
       files: [{ path: "package.json", line: 1 }],
       savings: "Pruning 20-30% of deps typically cuts build minutes and cold starts.",
+      beforeAfter: BEFORE_AFTER,
       fixPrompt: `Review package.json dependencies. Remove anything not directly imported. Prefer native APIs over micro-libraries. Consolidate duplicate utilities.`,
     });
   }

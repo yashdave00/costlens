@@ -1,5 +1,6 @@
 // Serverless function cost: heavy imports in API routes, sync work, missing edge.
 export const name = "serverless";
+const BEFORE_AFTER = { before: "Heavy serverless bundle", after: "Trimmed bundle", savingsUsd: 120, savingsPct: "40-80% cold start reduction" };
 const CODE_EXTS = [".js", ".jsx", ".ts", ".tsx"];
 
 export async function run({ root, files, fileContents }) {
@@ -32,6 +33,7 @@ export async function run({ root, files, fileContents }) {
         "\n\nHeavy imports inflate function bundle size → cold starts, memory, and (Vercel) function size limits.",
       files: [...byFile.keys()].map((p) => ({ path: p, line: 1 })),
       savings: "Trimming route bundles often cuts cold start 40-80% and avoids size-limit failures.",
+      beforeAfter: BEFORE_AFTER,
       fixPrompt: `Reduce bundle size in these API routes: ${[...byFile.entries()].map(([f, l]) => f + " (" + l.join(",") + ")").join("; ")}. Use dynamic imports, move heavy work to background jobs, or use lighter libs.`,
     });
   }
@@ -50,6 +52,7 @@ export async function run({ root, files, fileContents }) {
       detail: blocking.map((p) => `- ${p}`).join("\n"),
       files: blocking.map((p) => ({ path: p, line: 1 })),
       savings: "Blocking calls tie up function execution time → higher compute cost.",
+      beforeAfter: BEFORE_AFTER,
       fixPrompt: `Convert sync fs/child_process calls to async (readFile, writeFile, exec) in: ${blocking.join(", ")}.`,
     });
   }
