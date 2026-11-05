@@ -9,3 +9,7 @@ build/
 coverage/
 examples/*.md
 !examples/README.md
+
+# Paid products — kept local, uploaded to Gumroad, not published in the public repo
+skill/scout/
+products/
