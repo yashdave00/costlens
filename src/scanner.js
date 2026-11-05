@@ -14,8 +14,9 @@ import * as heavyDeps from "./rules/heavy-deps.js";
 import * as generalBloat from "./rules/general-bloat.js";
 import * as manifests from "./rules/manifests.js";
 import * as docker from "./rules/docker.js";
+import * as performance from "./rules/performance.js";
 
-const RULES = [generalBloat, manifests, depBloat, heavyDeps, nPlusOne, caching, images, bundle, supabase, serverless, docker];
+const RULES = [generalBloat, manifests, depBloat, heavyDeps, nPlusOne, caching, images, bundle, supabase, serverless, docker, performance];
 
 const CODE_EXTS = new Set([".js", ".jsx", ".ts", ".tsx", ".mjs", ".cjs", ".go", ".py", ".php", ".rb", ".rs", ".java", ".cs", ".kt", ".swift", ".scala", ".c", ".cpp", ".h", ".hpp"]);
 const ALL_EXTS = new Set([...CODE_EXTS, ".json", ".md", ".css", ".html", ".env", ".toml", ".yaml", ".yml", ".cfg", ".ini", ".txt", ".xml", ".gradle", ".properties", ".lock", ".mod", ".sum"]);
