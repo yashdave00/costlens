@@ -12,6 +12,7 @@
   },
   "keywords": ["cost", "optimization", "vibe-coding", "nextjs", "supabase", "vercel", "cloud", "audit"],
   "license": "MIT",
+  "files": ["src", "skill", "README.md", "LICENSE", "SETUP.md", "examples"],
   "engines": {
     "node": ">=18"
   },
