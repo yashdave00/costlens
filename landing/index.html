@@ -1,0 +1,104 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+<meta charset="UTF-8" />
+<meta name="viewport" content="width=device-width, initial-scale=1.0" />
+<title>CostLens — Find cloud cost leaks in your codebase</title>
+<meta name="description" content="Free open-source scanner for cloud/infra cost leaks in vibe-coded apps. N+1 queries, uncached fetches, heavy bundles, Supabase leaks. Get an agent-ready fix report in seconds." />
+<style>
+  :root { --bg:#0b0d12; --card:#141821; --fg:#e8ecf4; --muted:#9aa4b2; --accent:#5b8def; --accent2:#3dd68c; }
+  *{box-sizing:border-box}
+  body{margin:0;font-family:system-ui,-apple-system,Segoe UI,Roboto,sans-serif;background:var(--bg);color:var(--fg);line-height:1.6}
+  .wrap{max-width:920px;margin:0 auto;padding:40px 24px}
+  h1{font-size:clamp(2rem,5vw,3.2rem);margin:0 0 12px}
+  .sub{color:var(--muted);font-size:1.15rem;max-width:640px}
+  .cta{display:inline-block;background:var(--accent);color:#fff;padding:14px 22px;border-radius:8px;text-decoration:none;font-weight:600;margin:8px 8px 8px 0}
+  .cta2{background:transparent;border:1px solid #2a3142;color:var(--fg)}
+  .card{background:var(--card);border:1px solid #1f2433;border-radius:12px;padding:24px;margin:24px 0}
+  .grid{display:grid;grid-template-columns:repeat(auto-fit,minmax(240px,1fr));gap:16px}
+  .pill{display:inline-block;background:#1f2433;color:var(--muted);padding:4px 10px;border-radius:999px;font-size:.85rem;margin:4px 4px 0 0}
+  code{background:#1f2433;padding:2px 6px;border-radius:4px;font-size:.9rem}
+  pre{background:#0f1219;border:1px solid #1f2433;border-radius:8px;padding:16px;overflow:auto}
+  .price{font-size:2rem;font-weight:700;color:var(--accent2)}
+  footer{color:var(--muted);font-size:.9rem;margin-top:48px;text-align:center}
+</style>
+</head>
+<body>
+<div class="wrap">
+  <h1>Find the cloud money your codebase is burning.</h1>
+  <p class="sub">CostLens scans any repo for cost leaks — N+1 queries, uncached fetches, heavy deps in serverless bundles, Supabase <code>select("*")</code>, unoptimized images, committed binaries — and emits an agent-ready fix report in seconds.</p>
+  <div>
+    <a class="cta" href="https://github.com/YOURUSER/costlens">Get the free scanner →</a>
+    <a class="cta cta2" href="#audit">Book a deep audit</a>
+  </div>
+  <p style="color:var(--muted);margin-top:8px"><code>npx costlens scan .</code></p>
+
+  <div class="card">
+    <h2>What it catches</h2>
+    <div class="grid">
+      <div><strong>N+1 queries</strong><br><span style="color:var(--muted)">DB calls inside loops → 10–1000× more calls.</span></div>
+      <div><strong>Missing cache</strong><br><span style="color:var(--muted)">Uncached fetches hammer origin + DB.</span></div>
+      <div><strong>Heavy bundles</strong><br><span style="color:var(--muted)">moment/lodash/puppeteer in client or routes.</span></div>
+      <div><strong>Supabase leaks</strong><br><span style="color:var(--muted)"><code>select("*")</code>, no <code>.limit()</code>, realtime overuse.</span></div>
+      <div><strong>Image bloat</strong><br><span style="color:var(--muted)">Raw <code>&lt;img&gt;</code>, oversized public assets.</span></div>
+      <div><strong>Repo bloat</strong><br><span style="color:var(--muted)">Committed binaries, secrets, node_modules.</span></div>
+    </div>
+  </div>
+
+  <div class="card">
+    <h2>Agent-ready output</h2>
+    <p style="color:var(--muted)">Every finding ships with a <strong>fix prompt</strong> you paste into Claude Code / Cursor to auto-apply. Plus a combined "Agent Fix Block" at the end.</p>
+    <pre><code>$ npx costlens scan ./my-app
+
+# CostLens Report
+Files scanned: 42
+Findings: 11 (critical:1, high:3, medium:5, low:2)
+
+## 🔴 CRITICAL
+### Possible secrets committed (2 files)
+...
+**Fix prompt (paste into Claude Code / Cursor):**
+  Remove secrets from these files and rotate...</code></pre>
+  </div>
+
+  <div class="card" id="audit">
+    <h2>Deep Codebase Cost Audit</h2>
+    <p style="color:var(--muted)">CostLens finds the obvious leaks. I'll find the rest, fix the top ones, and tell you what you'll save.</p>
+    <div class="grid">
+      <div>
+        <div class="price">$199</div>
+        <strong>Standard</strong>
+        <ul style="color:var(--muted)">
+          <li>Full scan + manual review</li>
+          <li>Prioritized fix list with effort</li>
+          <li>Before/after cost estimate</li>
+          <li>24–48h turnaround</li>
+        </ul>
+      </div>
+      <div>
+        <div class="price">$499</div>
+        <strong>Deep</strong>
+        <ul style="color:var(--muted)">
+          <li>Everything in Standard</li>
+          <li>I open PRs for top fixes</li>
+          <li>30-day follow-up</li>
+          <li>Cost-savings guarantee*</li>
+        </ul>
+      </div>
+    </div>
+    <p style="color:var(--muted);font-size:.85rem">*If the Deep audit doesn't identify ≥$200/mo in savings, full refund.</p>
+    <a class="cta" href="https://gumroad.com/l/YOURPRODUCT">Book the audit →</a>
+  </div>
+
+  <div class="card">
+    <h2>Works on any codebase</h2>
+    <p style="color:var(--muted)">Language-agnostic core (large files, binaries, secrets, dep counts across npm/pip/go/ruby/php/rust/java) plus deep JS/TS rules. Add your own rule in <code>src/rules/</code>.</p>
+    <span class="pill">Next.js</span><span class="pill">Supabase</span><span class="pill">Vercel</span><span class="pill">Python</span><span class="pill">Go</span><span class="pill">Rails</span><span class="pill">Laravel</span>
+  </div>
+
+  <footer>
+    CostLens · MIT · Free & open source · Built for founders paying too much for cloud.
+  </footer>
+</div>
+</body>
+</html>
