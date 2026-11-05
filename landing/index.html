@@ -7,23 +7,31 @@
 <meta name="description" content="Free open-source scanner for cloud/infra cost leaks in vibe-coded apps. N+1 queries, uncached fetches, heavy bundles, Supabase leaks. Get an agent-ready fix report in seconds." />
 <link rel="preconnect" href="https://fonts.googleapis.com" />
 <link rel="preconnect" href="https://fonts.gstatic.com" crossorigin />
-<link href="https://fonts.googleapis.com/css2?family=Inter:wght@400;450;500;550;600&family=JetBrains+Mono:wght@400;500&display=swap" rel="stylesheet" />
+<link href="https://fonts.googleapis.com/css2?family=Inter:wght@300;400;450;500;550;600;700&family=JetBrains+Mono:wght@400;500;600&display=swap" rel="stylesheet" />
 <style>
   :root {
-    --bg: #fafafa;
-    --fg: #111;
-    --muted: #6b7280;
-    --muted-light: #9ca3af;
-    --border: #e5e7eb;
-    --border-strong: #d1d5db;
-    --card: #ffffff;
-    --accent: #2563eb;
-    --accent-hover: #1d4ed8;
-    --green: #16a34a;
-    --red: #dc2626;
-    --orange: #ea580c;
-    --yellow: #ca8a04;
-    --code-bg: #f4f4f5;
+    --bg: #09090b;
+    --bg-elevated: #111113;
+    --bg-card: #18181b;
+    --bg-card-hover: #1f1f23;
+    --fg: #fafafa;
+    --fg-secondary: #a1a1aa;
+    --fg-muted: #71717a;
+    --border: #27272a;
+    --border-hover: #3f3f46;
+    --accent: #3b82f6;
+    --accent-glow: rgba(59, 130, 246, 0.15);
+    --accent-light: #60a5fa;
+    --green: #22c55e;
+    --green-glow: rgba(34, 197, 94, 0.15);
+    --orange: #f97316;
+    --orange-glow: rgba(249, 115, 22, 0.15);
+    --red: #ef4444;
+    --red-glow: rgba(239, 68, 68, 0.15);
+    --yellow: #eab308;
+    --code-bg: #0d0d0f;
+    --gradient-hero: radial-gradient(ellipse 80% 50% at 50% -20%, rgba(59, 130, 246, 0.12), transparent);
+    --gradient-card: linear-gradient(135deg, rgba(255,255,255,0.03) 0%, rgba(255,255,255,0) 100%);
   }
   * { box-sizing: border-box; margin: 0; padding: 0; }
   html { scroll-behavior: smooth; }
@@ -34,436 +42,843 @@
     line-height: 1.6;
     -webkit-font-smoothing: antialiased;
     -moz-osx-font-smoothing: grayscale;
+    overflow-x: hidden;
   }
   .wrap {
-    max-width: 680px;
+    max-width: 1120px;
     margin: 0 auto;
-    padding: 80px 24px 120px;
+    padding: 0 32px;
+  }
+  .container-narrow {
+    max-width: 720px;
+    margin: 0 auto;
   }
   /* Typography */
   h1 {
-    font-size: clamp(2rem, 5vw, 2.75rem);
-    font-weight: 550;
-    line-height: 1.15;
-    letter-spacing: -0.02em;
-    margin-bottom: 16px;
+    font-size: clamp(2.5rem, 6vw, 4rem);
+    font-weight: 700;
+    line-height: 1.05;
+    letter-spacing: -0.03em;
   }
   h2 {
-    font-size: 1.25rem;
-    font-weight: 550;
-    letter-spacing: -0.01em;
-    margin-bottom: 12px;
-    margin-top: 48px;
+    font-size: clamp(1.5rem, 3vw, 2rem);
+    font-weight: 600;
+    line-height: 1.2;
+    letter-spacing: -0.02em;
   }
   h3 {
     font-size: 1rem;
-    font-weight: 550;
-    margin-bottom: 8px;
+    font-weight: 600;
+    letter-spacing: -0.01em;
   }
-  p { color: var(--muted); font-size: 1.05rem; }
-  a { color: var(--accent); text-decoration: none; }
-  a:hover { text-decoration: underline; text-underline-offset: 3px; }
+  p { color: var(--fg-secondary); }
+  a { color: var(--accent-light); text-decoration: none; transition: color 0.2s; }
+  a:hover { color: var(--fg); }
   code {
     font-family: 'JetBrains Mono', 'SF Mono', monospace;
     font-size: 0.875em;
-    background: var(--code-bg);
-    padding: 2px 6px;
-    border-radius: 4px;
-    color: var(--fg);
   }
-  /* Header */
-  header {
+  /* Nav */
+  nav {
+    position: fixed;
+    top: 0;
+    left: 0;
+    right: 0;
+    z-index: 100;
+    background: rgba(9, 9, 11, 0.8);
+    backdrop-filter: blur(12px);
+    -webkit-backdrop-filter: blur(12px);
+    border-bottom: 1px solid var(--border);
+  }
+  nav .nav-inner {
+    max-width: 1120px;
+    margin: 0 auto;
+    padding: 0 32px;
+    height: 64px;
     display: flex;
     align-items: center;
     justify-content: space-between;
-    margin-bottom: 64px;
-    padding-bottom: 24px;
-    border-bottom: 1px solid var(--border);
   }
-  .logo {
-    font-weight: 600;
-    font-size: 0.95rem;
+  .nav-logo {
+    font-weight: 700;
+    font-size: 1rem;
     color: var(--fg);
-    text-decoration: none;
-    letter-spacing: -0.01em;
+    letter-spacing: -0.02em;
+    display: flex;
+    align-items: center;
+    gap: 8px;
   }
-  .logo:hover { text-decoration: none; opacity: 0.7; }
-  .header-link {
+  .nav-logo .dot {
+    width: 8px;
+    height: 8px;
+    background: var(--accent);
+    border-radius: 50%;
+    box-shadow: 0 0 12px var(--accent-glow);
+  }
+  .nav-links {
+    display: flex;
+    gap: 24px;
+    align-items: center;
+  }
+  .nav-links a {
     font-size: 0.875rem;
-    color: var(--muted);
+    color: var(--fg-secondary);
+    transition: color 0.2s;
   }
-  .header-link:hover { color: var(--fg); text-decoration: none; }
+  .nav-links a:hover { color: var(--fg); text-decoration: none; }
+  .nav-cta {
+    background: var(--fg);
+    color: var(--bg);
+    padding: 8px 16px;
+    border-radius: 6px;
+    font-size: 0.875rem;
+    font-weight: 500;
+    transition: opacity 0.2s, transform 0.2s;
+  }
+  .nav-cta:hover { opacity: 0.9; transform: translateY(-1px); text-decoration: none; color: var(--bg); }
   /* Hero */
-  .hero-sub {
-    font-size: 1.125rem;
-    color: var(--muted);
-    max-width: 560px;
+  .hero {
+    padding: 160px 0 100px;
+    position: relative;
+    overflow: hidden;
+  }
+  .hero::before {
+    content: '';
+    position: absolute;
+    top: 0;
+    left: 50%;
+    transform: translateX(-50%);
+    width: 100%;
+    height: 600px;
+    background: var(--gradient-hero);
+    pointer-events: none;
+  }
+  .hero-grid {
+    position: absolute;
+    top: 0;
+    left: 0;
+    right: 0;
+    bottom: 0;
+    background-image:
+      linear-gradient(rgba(255,255,255,0.02) 1px, transparent 1px),
+      linear-gradient(90deg, rgba(255,255,255,0.02) 1px, transparent 1px);
+    background-size: 64px 64px;
+    mask-image: radial-gradient(ellipse 80% 60% at 50% 0%, black 40%, transparent 100%);
+    -webkit-mask-image: radial-gradient(ellipse 80% 60% at 50% 0%, black 40%, transparent 100%);
+    pointer-events: none;
+  }
+  .hero-content {
+    position: relative;
+    z-index: 1;
+  }
+  .hero-badge {
+    display: inline-flex;
+    align-items: center;
+    gap: 8px;
+    background: var(--bg-card);
+    border: 1px solid var(--border);
+    border-radius: 999px;
+    padding: 6px 14px 6px 8px;
+    font-size: 0.8rem;
+    color: var(--fg-secondary);
     margin-bottom: 32px;
+  }
+  .hero-badge .dot {
+    width: 6px;
+    height: 6px;
+    background: var(--green);
+    border-radius: 50%;
+    box-shadow: 0 0 8px var(--green-glow);
+    animation: pulse 2s ease-in-out infinite;
+  }
+  @keyframes pulse {
+    0%, 100% { opacity: 1; }
+    50% { opacity: 0.5; }
+  }
+  .hero h1 .gradient-text {
+    background: linear-gradient(135deg, #60a5fa 0%, #a78bfa 50%, #f472b6 100%);
+    -webkit-background-clip: text;
+    -webkit-text-fill-color: transparent;
+    background-clip: text;
+  }
+  .hero-sub {
+    font-size: 1.2rem;
+    color: var(--fg-secondary);
+    max-width: 600px;
+    margin: 24px 0 40px;
     line-height: 1.7;
   }
+  .hero-sub strong { color: var(--fg); font-weight: 500; }
   .cta-row {
     display: flex;
     gap: 12px;
     flex-wrap: wrap;
     align-items: center;
-    margin-bottom: 16px;
   }
   .cta {
     display: inline-flex;
     align-items: center;
-    gap: 6px;
-    background: var(--fg);
-    color: #fff;
-    padding: 10px 18px;
-    border-radius: 6px;
-    font-size: 0.9rem;
+    gap: 8px;
+    padding: 12px 24px;
+    border-radius: 8px;
+    font-size: 0.95rem;
     font-weight: 500;
     text-decoration: none;
-    transition: opacity 0.15s, transform 0.15s;
+    transition: all 0.2s ease;
+    position: relative;
+    overflow: hidden;
   }
-  .cta:hover { opacity: 0.85; text-decoration: none; transform: translateY(-1px); }
+  .cta-primary {
+    background: var(--fg);
+    color: var(--bg);
+  }
+  .cta-primary:hover {
+    transform: translateY(-2px);
+    box-shadow: 0 8px 24px rgba(255,255,255,0.1);
+    text-decoration: none;
+    color: var(--bg);
+  }
   .cta-secondary {
-    background: transparent;
+    background: var(--bg-card);
     color: var(--fg);
-    border: 1px solid var(--border-strong);
+    border: 1px solid var(--border);
   }
-  .cta-secondary:hover { background: var(--code-bg); }
+  .cta-secondary:hover {
+    border-color: var(--border-hover);
+    background: var(--bg-card-hover);
+    transform: translateY(-2px);
+    text-decoration: none;
+  }
   .install-box {
     display: inline-flex;
     align-items: center;
-    gap: 8px;
-    background: var(--code-bg);
+    gap: 10px;
+    background: var(--bg-card);
     border: 1px solid var(--border);
-    border-radius: 6px;
-    padding: 8px 14px;
+    border-radius: 8px;
+    padding: 10px 16px;
     font-family: 'JetBrains Mono', monospace;
     font-size: 0.85rem;
-    color: var(--fg);
-    margin-top: 8px;
+    color: var(--fg-secondary);
+    margin-top: 24px;
+    transition: border-color 0.2s;
   }
-  .install-box .prompt { color: var(--muted-light); user-select: none; }
+  .install-box:hover { border-color: var(--border-hover); }
+  .install-box .prompt { color: var(--fg-muted); user-select: none; }
+  .install-box .cmd { color: var(--fg); }
+  /* Stats bar */
+  .stats-bar {
+    display: flex;
+    gap: 48px;
+    margin-top: 64px;
+    padding-top: 40px;
+    border-top: 1px solid var(--border);
+  }
+  .stat { }
+  .stat-value {
+    font-size: 1.75rem;
+    font-weight: 700;
+    letter-spacing: -0.02em;
+    background: linear-gradient(135deg, var(--fg) 0%, var(--fg-secondary) 100%);
+    -webkit-background-clip: text;
+    -webkit-text-fill-color: transparent;
+    background-clip: text;
+  }
+  .stat-label {
+    font-size: 0.8rem;
+    color: var(--fg-muted);
+    margin-top: 4px;
+  }
   /* Sections */
-  section { margin-top: 72px; }
+  section {
+    padding: 100px 0;
+    position: relative;
+  }
+  .section-header {
+    margin-bottom: 48px;
+  }
   .section-label {
     font-size: 0.75rem;
     font-weight: 600;
     text-transform: uppercase;
-    letter-spacing: 0.08em;
-    color: var(--muted-light);
-    margin-bottom: 16px;
+    letter-spacing: 0.1em;
+    color: var(--accent-light);
+    margin-bottom: 12px;
   }
-  /* Feature grid */
-  .feature-grid {
-    display: grid;
-    grid-template-columns: 1fr 1fr;
-    gap: 1px;
-    background: var(--border);
-    border: 1px solid var(--border);
-    border-radius: 8px;
-    overflow: hidden;
-    margin-top: 16px;
-  }
-  .feature-item {
-    background: var(--card);
-    padding: 20px;
-  }
-  .feature-item strong {
-    display: block;
-    font-size: 0.9rem;
-    font-weight: 550;
-    margin-bottom: 4px;
-  }
-  .feature-item span {
-    font-size: 0.825rem;
-    color: var(--muted);
-    line-height: 1.5;
-  }
-  /* Code block */
-  .code-block {
-    background: #18181b;
-    border-radius: 8px;
-    padding: 20px 24px;
-    margin-top: 16px;
-    overflow-x: auto;
-    font-family: 'JetBrains Mono', monospace;
-    font-size: 0.8rem;
-    line-height: 1.7;
-    color: #e4e4e7;
-  }
-  .code-block .comment { color: #71717a; }
-  .code-block .keyword { color: #60a5fa; }
-  .code-block .string { color: #86efac; }
-  .code-block .number { color: #fbbf24; }
-  .code-block .severity-critical { color: #f87171; font-weight: 600; }
-  .code-block .severity-high { color: #fb923c; font-weight: 600; }
-  .code-block .severity-medium { color: #facc15; font-weight: 600; }
-  /* Pricing table */
-  .pricing-table {
-    margin-top: 16px;
-    border: 1px solid var(--border);
-    border-radius: 8px;
-    overflow: hidden;
-  }
-  .pricing-row {
-    display: grid;
-    grid-template-columns: 100px 1fr;
-    gap: 16px;
-    padding: 20px 24px;
-    border-bottom: 1px solid var(--border);
-    background: var(--card);
-    transition: background 0.15s;
-  }
-  .pricing-row:last-child { border-bottom: none; }
-  .pricing-row:hover { background: #f9fafb; }
-  .pricing-tier {
-    font-weight: 600;
-    font-size: 0.95rem;
-  }
-  .pricing-price {
-    font-size: 1.5rem;
+  .section-title {
+    font-size: clamp(1.5rem, 3vw, 2rem);
     font-weight: 600;
     letter-spacing: -0.02em;
-    line-height: 1;
-    margin-bottom: 2px;
+    line-height: 1.2;
   }
-  .pricing-features {
-    list-style: none;
-    font-size: 0.875rem;
-    color: var(--muted);
-  }
-  .pricing-features li {
-    padding: 2px 0;
-    display: flex;
-    align-items: baseline;
-    gap: 8px;
-  }
-  .pricing-features li::before {
-    content: "—";
-    color: var(--muted-light);
-    flex-shrink: 0;
-  }
-  /* Tier colors */
-  .tier-scout .pricing-price { color: var(--fg); }
-  .tier-probe .pricing-price { color: var(--accent); }
-  .tier-investigate .pricing-price { color: var(--orange); }
-  .tier-architect .pricing-price { color: var(--green); }
-  /* Note */
-  .note {
-    font-size: 0.8rem;
-    color: var(--muted-light);
+  .section-desc {
+    font-size: 1rem;
+    color: var(--fg-secondary);
+    max-width: 520px;
     margin-top: 12px;
-    line-height: 1.5;
+    line-height: 1.7;
   }
-  /* Pills */
-  .pill-row {
+  /* Feature cards */
+  .feature-grid {
+    display: grid;
+    grid-template-columns: repeat(3, 1fr);
+    gap: 16px;
+  }
+  .feature-card {
+    background: var(--bg-card);
+    border: 1px solid var(--border);
+    border-radius: 12px;
+    padding: 24px;
+    transition: all 0.3s ease;
+    position: relative;
+    overflow: hidden;
+  }
+  .feature-card::before {
+    content: '';
+    position: absolute;
+    top: 0;
+    left: 0;
+    right: 0;
+    height: 1px;
+    background: linear-gradient(90deg, transparent, var(--accent), transparent);
+    opacity: 0;
+    transition: opacity 0.3s;
+  }
+  .feature-card:hover {
+    border-color: var(--border-hover);
+    background: var(--bg-card-hover);
+    transform: translateY(-4px);
+  }
+  .feature-card:hover::before { opacity: 1; }
+  .feature-icon {
+    width: 40px;
+    height: 40px;
+    border-radius: 8px;
     display: flex;
-    flex-wrap: wrap;
-    gap: 6px;
-    margin-top: 12px;
+    align-items: center;
+    justify-content: center;
+    font-size: 1.25rem;
+    margin-bottom: 16px;
+    background: var(--bg-elevated);
+    border: 1px solid var(--border);
   }
-  .pill {
-    font-size: 0.75rem;
-    color: var(--muted);
+  .feature-card h3 {
+    font-size: 0.95rem;
+    font-weight: 600;
+    margin-bottom: 8px;
+    color: var(--fg);
+  }
+  .feature-card p {
+    font-size: 0.85rem;
+    color: var(--fg-muted);
+    line-height: 1.6;
+  }
+  /* Code block */
+  .code-window {
     background: var(--code-bg);
     border: 1px solid var(--border);
-    padding: 4px 10px;
+    border-radius: 12px;
+    overflow: hidden;
+    margin-top: 32px;
+    box-shadow: 0 24px 48px rgba(0,0,0,0.4);
+  }
+  .code-window-header {
+    display: flex;
+    align-items: center;
+    gap: 8px;
+    padding: 12px 16px;
+    border-bottom: 1px solid var(--border);
+    background: var(--bg-elevated);
+  }
+  .code-window-dot {
+    width: 12px;
+    height: 12px;
+    border-radius: 50%;
+    background: var(--border-hover);
+  }
+  .code-window-dot:nth-child(1) { background: #ef4444; }
+  .code-window-dot:nth-child(2) { background: #eab308; }
+  .code-window-dot:nth-child(3) { background: #22c55e; }
+  .code-window-title {
+    font-size: 0.75rem;
+    color: var(--fg-muted);
+    font-family: 'JetBrains Mono', monospace;
+    margin-left: 8px;
+  }
+  .code-window-body {
+    padding: 20px 24px;
+    font-family: 'JetBrains Mono', monospace;
+    font-size: 0.8rem;
+    line-height: 1.8;
+    color: #e4e4e7;
+    overflow-x: auto;
+  }
+  .code-window-body .line { display: block; }
+  .code-window-body .comment { color: #52525b; }
+  .code-window-body .keyword { color: #60a5fa; }
+  .code-window-body .string { color: #86efac; }
+  .code-window-body .number { color: #fbbf24; }
+  .code-window-body .severity-critical { color: #f87171; font-weight: 600; }
+  .code-window-body .severity-high { color: #fb923c; font-weight: 600; }
+  .code-window-body .severity-medium { color: #facc15; font-weight: 600; }
+  .code-window-body .bold { font-weight: 600; color: #fafafa; }
+  /* Pricing */
+  .pricing-grid {
+    display: grid;
+    grid-template-columns: repeat(4, 1fr);
+    gap: 16px;
+    margin-top: 32px;
+  }
+  .pricing-card {
+    background: var(--bg-card);
+    border: 1px solid var(--border);
+    border-radius: 12px;
+    padding: 28px 24px;
+    position: relative;
+    transition: all 0.3s ease;
+    display: flex;
+    flex-direction: column;
+  }
+  .pricing-card:hover {
+    border-color: var(--border-hover);
+    transform: translateY(-4px);
+  }
+  .pricing-card.featured {
+    border-color: var(--accent);
+    background: linear-gradient(180deg, rgba(59,130,246,0.05) 0%, var(--bg-card) 100%);
+  }
+  .pricing-card.featured::before {
+    content: 'Most popular';
+    position: absolute;
+    top: -12px;
+    left: 50%;
+    transform: translateX(-50%);
+    background: var(--accent);
+    color: #fff;
+    font-size: 0.7rem;
+    font-weight: 600;
+    padding: 4px 12px;
     border-radius: 999px;
+    text-transform: uppercase;
+    letter-spacing: 0.05em;
+  }
+  .pricing-name {
+    font-size: 0.85rem;
+    font-weight: 600;
+    text-transform: uppercase;
+    letter-spacing: 0.08em;
+    color: var(--fg-muted);
+    margin-bottom: 8px;
+  }
+  .pricing-price {
+    font-size: 2.25rem;
+    font-weight: 700;
+    letter-spacing: -0.03em;
+    line-height: 1;
+    margin-bottom: 20px;
+  }
+  .pricing-price .currency { font-size: 1.25rem; vertical-align: top; color: var(--fg-muted); }
+  .pricing-features {
+    list-style: none;
+    flex: 1;
+    margin-bottom: 24px;
+  }
+  .pricing-features li {
+    font-size: 0.825rem;
+    color: var(--fg-secondary);
+    padding: 6px 0;
+    display: flex;
+    align-items: flex-start;
+    gap: 8px;
+    line-height: 1.5;
+  }
+  .pricing-features li::before {
+    content: '✓';
+    color: var(--green);
+    font-weight: 600;
+    flex-shrink: 0;
+    font-size: 0.8rem;
+  }
+  .pricing-cta {
+    display: block;
+    text-align: center;
+    padding: 10px;
+    border-radius: 6px;
+    font-size: 0.875rem;
     font-weight: 500;
+    text-decoration: none;
+    transition: all 0.2s;
+  }
+  .pricing-cta-primary {
+    background: var(--fg);
+    color: var(--bg);
+  }
+  .pricing-cta-primary:hover {
+    opacity: 0.9;
+    text-decoration: none;
+    color: var(--bg);
+  }
+  .pricing-cta-secondary {
+    background: transparent;
+    color: var(--fg);
+    border: 1px solid var(--border);
+  }
+  .pricing-cta-secondary:hover {
+    border-color: var(--border-hover);
+    background: var(--bg-card-hover);
+    text-decoration: none;
+  }
+  /* Tier accent colors */
+  .tier-scout .pricing-price { color: var(--fg); }
+  .tier-probe .pricing-price { color: var(--accent-light); }
+  .tier-investigate .pricing-price { color: var(--orange); }
+  .tier-architect .pricing-price { color: var(--green); }
+  /* Works on */
+  .tech-grid {
+    display: flex;
+    flex-wrap: wrap;
+    gap: 8px;
+    margin-top: 24px;
+  }
+  .tech-pill {
+    font-size: 0.8rem;
+    color: var(--fg-secondary);
+    background: var(--bg-card);
+    border: 1px solid var(--border);
+    padding: 6px 14px;
+    border-radius: 6px;
+    font-weight: 500;
+    transition: all 0.2s;
+  }
+  .tech-pill:hover {
+    border-color: var(--border-hover);
+    color: var(--fg);
   }
   /* Footer */
   footer {
-    margin-top: 96px;
-    padding-top: 24px;
+    margin-top: 120px;
+    padding: 40px 0;
     border-top: 1px solid var(--border);
-    font-size: 0.8rem;
-    color: var(--muted-light);
     display: flex;
     justify-content: space-between;
+    align-items: center;
     flex-wrap: wrap;
-    gap: 8px;
+    gap: 16px;
   }
-  /* Divider */
-  .divider {
-    height: 1px;
-    background: var(--border);
-    margin: 48px 0;
+  .footer-left {
+    font-size: 0.8rem;
+    color: var(--fg-muted);
+  }
+  .footer-right {
+    display: flex;
+    gap: 24px;
+  }
+  .footer-right a {
+    font-size: 0.8rem;
+    color: var(--fg-muted);
+  }
+  .footer-right a:hover { color: var(--fg); text-decoration: none; }
+  /* Note */
+  .note {
+    font-size: 0.8rem;
+    color: var(--fg-muted);
+    margin-top: 20px;
+    line-height: 1.6;
+    max-width: 600px;
+  }
+  .note strong { color: var(--fg-secondary); font-weight: 500; }
+  /* Open source section */
+  .os-section {
+    background: var(--bg-card);
+    border: 1px solid var(--border);
+    border-radius: 12px;
+    padding: 32px;
+    margin-top: 32px;
+  }
+  .os-section h3 { color: var(--fg); margin-bottom: 8px; }
+  .os-section p { font-size: 0.9rem; margin-bottom: 16px; }
+  .os-section a {
+    font-size: 0.875rem;
+    font-weight: 500;
   }
   /* Responsive */
+  @media (max-width: 900px) {
+    .pricing-grid { grid-template-columns: repeat(2, 1fr); }
+    .feature-grid { grid-template-columns: repeat(2, 1fr); }
+  }
   @media (max-width: 640px) {
-    .wrap { padding: 48px 20px 80px; }
-    header { margin-bottom: 48px; }
-    section { margin-top: 56px; }
+    .wrap { padding: 0 20px; }
+    .hero { padding: 120px 0 60px; }
+    .stats-bar { flex-direction: column; gap: 24px; }
+    section { padding: 64px 0; }
+    .pricing-grid { grid-template-columns: 1fr; }
     .feature-grid { grid-template-columns: 1fr; }
-    .pricing-row { grid-template-columns: 1fr; gap: 8px; }
     .cta-row { flex-direction: column; align-items: stretch; }
     .cta { justify-content: center; }
+    .nav-links { display: none; }
+    footer { flex-direction: column; text-align: center; }
   }
+  /* Fade in animation */
+  .fade-in {
+    opacity: 0;
+    transform: translateY(20px);
+    animation: fadeIn 0.6s ease forwards;
+  }
+  @keyframes fadeIn {
+    to { opacity: 1; transform: translateY(0); }
+  }
+  .fade-in-delay-1 { animation-delay: 0.1s; }
+  .fade-in-delay-2 { animation-delay: 0.2s; }
+  .fade-in-delay-3 { animation-delay: 0.3s; }
 </style>
 </head>
 <body>
+
+<nav>
+  <div class="nav-inner">
+    <a href="/" class="nav-logo"><span class="dot"></span> CostLens</a>
+    <div class="nav-links">
+      <a href="#features">Features</a>
+      <a href="#pricing">Pricing</a>
+      <a href="#open-source">Open source</a>
+      <a href="https://github.com/YOURUSER/costlens" class="nav-cta">GitHub</a>
+    </div>
+  </div>
+</nav>
+
 <div class="wrap">
 
-  <header>
-    <a href="/" class="logo">CostLens</a>
-    <a href="https://github.com/YOURUSER/costlens" class="header-link">GitHub →</a>
-  </header>
+  <!-- Hero -->
+  <section class="hero" style="padding: 120px 0 80px;">
+    <div class="hero-grid"></div>
+    <div class="hero-content">
+      <div class="hero-badge fade-in">
+        <span class="dot"></span>
+        Open source · MIT licensed
+      </div>
+      <h1 class="fade-in fade-in-delay-1">
+        Find the cloud money<br>
+        your codebase is <span class="gradient-text">burning.</span>
+      </h1>
+      <p class="hero-sub fade-in fade-in-delay-2">
+        CostLens scans any repo for cost leaks — <strong>N+1 queries</strong>, uncached fetches,
+        heavy deps in serverless bundles, Supabase <code>select("*")</code>, unoptimized images,
+        committed binaries — and emits an <strong>agent-ready fix report</strong> in seconds.
+      </p>
+      <div class="cta-row fade-in fade-in-delay-3">
+        <a href="https://github.com/YOURUSER/costlens" class="cta cta-primary">
+          Get the free scanner
+          <svg width="16" height="16" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round"><path d="M5 12h14M12 5l7 7-7 7"/></svg>
+        </a>
+        <a href="#pricing" class="cta cta-secondary">View pricing</a>
+      </div>
+      <div class="install-box fade-in fade-in-delay-3">
+        <span class="prompt">$</span>
+        <span class="cmd">npx costlens scan .</span>
+      </div>
 
-  <main>
-    <h1>Find the cloud money<br>your codebase is burning.</h1>
-    <p class="hero-sub">
-      CostLens scans any repo for cost leaks — N+1 queries, uncached fetches, heavy
-      deps in serverless bundles, Supabase <code>select("*")</code>, unoptimized
-      images, committed binaries — and emits an agent-ready fix report in seconds.
-    </p>
-
-    <div class="cta-row">
-      <a href="https://github.com/YOURUSER/costlens" class="cta">Get the free scanner</a>
-      <a href="#pricing" class="cta cta-secondary">View pricing</a>
-    </div>
-    <div class="install-box">
-      <span class="prompt">$</span> npx costlens scan .
-    </div>
-
-    <section>
-      <div class="section-label">What it catches</div>
-      <div class="feature-grid">
-        <div class="feature-item">
-          <strong>N+1 queries</strong>
-          <span>DB calls inside loops multiply with data size. 10–1000× more calls than needed.</span>
+      <div class="stats-bar">
+        <div class="stat">
+          <div class="stat-value">10+</div>
+          <div class="stat-label">Detection rules</div>
         </div>
-        <div class="feature-item">
-          <strong>Missing cache</strong>
-          <span>Uncached fetches hammer your origin and database on every request.</span>
+        <div class="stat">
+          <div class="stat-value">8</div>
+          <div class="stat-label">Languages supported</div>
         </div>
-        <div class="feature-item">
-          <strong>Heavy bundles</strong>
-          <span>moment, lodash, puppeteer in client or serverless routes inflate cold starts.</span>
+        <div class="stat">
+          <div class="stat-value">&lt;5s</div>
+          <div class="stat-label">Scan time</div>
         </div>
-        <div class="feature-item">
-          <strong>Supabase leaks</strong>
-          <span><code>select("*")</code>, unbounded queries, realtime overuse, untransformed storage URLs.</span>
-        </div>
-        <div class="feature-item">
-          <strong>Image bloat</strong>
-          <span>Raw <code>&lt;img&gt;</code> tags and oversized assets in <code>public/</code>.</span>
-        </div>
-        <div class="feature-item">
-          <strong>Repo bloat</strong>
-          <span>Committed binaries, secrets, node_modules, and excessive dependencies.</span>
+        <div class="stat">
+          <div class="stat-value">MIT</div>
+          <div class="stat-label">License</div>
         </div>
       </div>
-    </section>
+    </div>
+  </section>
 
-    <section>
+  <!-- Features -->
+  <section id="features">
+    <div class="section-header">
+      <div class="section-label">What it catches</div>
+      <h2 class="section-title">Six categories of cost leaks,<br>found automatically.</h2>
+      <p class="section-desc">Each finding includes file:line, estimated impact, and a fix prompt you can paste into your coding agent.</p>
+    </div>
+    <div class="feature-grid">
+      <div class="feature-card">
+        <div class="feature-icon">🔍</div>
+        <h3>N+1 queries</h3>
+        <p>DB calls inside loops multiply with data size. 10–1000× more calls than needed. Batch with <code>.in()</code> or joins.</p>
+      </div>
+      <div class="feature-card">
+        <div class="feature-icon">⚡</div>
+        <h3>Missing cache</h3>
+        <p>Uncached fetches hammer your origin and database on every request. Add <code>revalidate</code> or ISR.</p>
+      </div>
+      <div class="feature-card">
+        <div class="feature-icon">📦</div>
+        <h3>Heavy bundles</h3>
+        <p>moment, lodash, puppeteer in client or serverless routes inflate cold starts and bundle size.</p>
+      </div>
+      <div class="feature-card">
+        <div class="feature-icon">🗄️</div>
+        <h3>Supabase leaks</h3>
+        <p><code>select("*")</code>, unbounded queries, realtime overuse, untransformed storage URLs.</p>
+      </div>
+      <div class="feature-card">
+        <div class="feature-icon">🖼️</div>
+        <h3>Image bloat</h3>
+        <p>Raw <code>&lt;img&gt;</code> tags and oversized assets in <code>public/</code>. Cut bandwidth 30–70%.</p>
+      </div>
+      <div class="feature-card">
+        <div class="feature-icon">🧹</div>
+        <h3>Repo bloat</h3>
+        <p>Committed binaries, secrets, node_modules, and excessive dependencies. Shrink clones and CI.</p>
+      </div>
+    </div>
+  </section>
+
+  <!-- Code output -->
+  <section>
+    <div class="section-header">
       <div class="section-label">Agent-ready output</div>
-      <p style="margin-bottom: 4px;">Every finding ships with a fix prompt you paste into Claude Code or Cursor to auto-apply. A combined Agent Fix Block sits at the end.</p>
-      <div class="code-block">
-<span class="comment">$ npx costlens scan ./my-app</span>
-
+      <h2 class="section-title">Every finding ships with a fix prompt.</h2>
+      <p class="section-desc">Paste the report into Claude Code or Cursor and it auto-applies the fixes. A combined Agent Fix Block sits at the end.</p>
+    </div>
+    <div class="code-window">
+      <div class="code-window-header">
+        <span class="code-window-dot"></span>
+        <span class="code-window-dot"></span>
+        <span class="code-window-dot"></span>
+        <span class="code-window-title">costlens-report.md</span>
+      </div>
+      <div class="code-window-body">
 <span class="comment"># CostLens Report</span>
 <span class="comment">Files scanned: 42</span>
 <span class="comment">Findings: 11 (critical:1, high:3, medium:5, low:2)</span>
+<span class="comment">Estimated savings: $340–$1,200/mo</span>
 
 <span class="severity-critical">## 🔴 CRITICAL</span>
 <span class="severity-critical">### Possible secrets committed (2 files)</span>
-<span class="comment">...</span>
-<span class="keyword">**Fix prompt (paste into Claude Code / Cursor):**</span>
-  Remove secrets from these files and rotate...
-      </div>
-    </section>
+<span class="comment">  src/config.ts:14 — AWS access key pattern detected</span>
+<span class="comment">  .env:3 — committed environment file</span>
+<span class="bold">**Fix prompt (paste into Claude Code / Cursor):**</span>
+  Remove secrets from these files and rotate credentials...
 
-    <section id="pricing">
+<span class="severity-high">## 🟠 HIGH</span>
+<span class="severity-high">### Possible N+1 query patterns (4)</span>
+<span class="comment">  src/app/page.tsx:17 — for (const u of users) {</span>
+<span class="comment">  src/api/orders.ts:23 — for (const o of orders) {</span>
+<span class="bold">**Fix prompt:**</span>
+  Batch queries with .in() or single join. Files: ...
+      </div>
+    </div>
+  </section>
+
+  <!-- Pricing -->
+  <section id="pricing">
+    <div class="section-header">
       <div class="section-label">Pricing</div>
-      <p style="margin-bottom: 16px;">Start free. Upgrade when you want someone to fix it.</p>
-      <div class="pricing-table">
-        <div class="pricing-row tier-scout">
-          <div>
-            <div class="pricing-price">$29</div>
-            <div class="pricing-tier">Scout</div>
-          </div>
-          <ul class="pricing-features">
-            <li>CostLens agent skill (Claude, Cursor, Codex)</li>
-            <li>Curated fix templates</li>
-            <li>Benchmark data</li>
-            <li>Advanced rules not in free CLI</li>
-            <li>Self-serve</li>
-          </ul>
-        </div>
-        <div class="pricing-row tier-probe">
-          <div>
-            <div class="pricing-price">$99</div>
-            <div class="pricing-tier">Probe</div>
-          </div>
-          <ul class="pricing-features">
-            <li>Everything in Scout</li>
-            <li>Full cloud cost audit (IAM or CSV)</li>
-            <li>Top-5 waste categories with $ estimates</li>
-            <li>Right-sizing recommendations</li>
-            <li>RI / Savings Plan suggestions</li>
-            <li>48h turnaround</li>
-          </ul>
-        </div>
-        <div class="pricing-row tier-investigate">
-          <div>
-            <div class="pricing-price">$199</div>
-            <div class="pricing-tier">Investigate</div>
-          </div>
-          <ul class="pricing-features">
-            <li>Everything in Probe</li>
-            <li>Code ↔ cloud correlation</li>
-            <li>DB query review (N+1, indexes, unbounded)</li>
-            <li>PRs for top 3 fixes</li>
-          </ul>
-        </div>
-        <div class="pricing-row tier-architect">
-          <div>
-            <div class="pricing-price">$2,000</div>
-            <div class="pricing-tier">Architect</div>
-          </div>
-          <ul class="pricing-features">
-            <li>Everything in Investigate</li>
-            <li>Full architecture review (cost, latency, throughput)</li>
-            <li>PRs for top fixes</li>
-            <li>30-day follow-up</li>
-            <li>1-hour call</li>
-            <li>Savings guarantee*</li>
-          </ul>
-        </div>
+      <h2 class="section-title">Start free. Upgrade when you want someone to fix it.</h2>
+      <p class="section-desc">The scanner and skill are free and open source. Paid tiers add cloud audits, correlation, and deep architecture reviews.</p>
+    </div>
+    <div class="pricing-grid">
+      <div class="pricing-card tier-scout">
+        <div class="pricing-name">Scout</div>
+        <div class="pricing-price"><span class="currency">$</span>29</div>
+        <ul class="pricing-features">
+          <li>CostLens agent skill</li>
+          <li>Curated fix templates</li>
+          <li>Benchmark data</li>
+          <li>Advanced rules</li>
+          <li>Self-serve</li>
+        </ul>
+        <a href="https://gumroad.com/l/YOURPRODUCT" class="pricing-cta pricing-cta-secondary">Get Scout</a>
       </div>
-      <p class="note">*Architect tier: if the audit doesn't identify ≥$200/mo in savings, full refund. Cloud audits use IAM access (preferred) or CSV export (fallback for hesitant buyers).</p>
-    </section>
+      <div class="pricing-card tier-probe featured">
+        <div class="pricing-name">Probe</div>
+        <div class="pricing-price"><span class="currency">$</span>99</div>
+        <ul class="pricing-features">
+          <li>Everything in Scout</li>
+          <li>Full cloud cost audit</li>
+          <li>Top-5 waste with $ estimates</li>
+          <li>Right-sizing recs</li>
+          <li>RI / Savings Plan tips</li>
+          <li>48h turnaround</li>
+        </ul>
+        <a href="https://gumroad.com/l/YOURPRODUCT" class="pricing-cta pricing-cta-primary">Get Probe</a>
+      </div>
+      <div class="pricing-card tier-investigate">
+        <div class="pricing-name">Investigate</div>
+        <div class="pricing-price"><span class="currency">$</span>199</div>
+        <ul class="pricing-features">
+          <li>Everything in Probe</li>
+          <li>Code ↔ cloud correlation</li>
+          <li>DB query review</li>
+          <li>PRs for top 3 fixes</li>
+        </ul>
+        <a href="https://gumroad.com/l/YOURPRODUCT" class="pricing-cta pricing-cta-secondary">Get Investigate</a>
+      </div>
+      <div class="pricing-card tier-architect">
+        <div class="pricing-name">Architect</div>
+        <div class="pricing-price"><span class="currency">$</span>2,000</div>
+        <ul class="pricing-features">
+          <li>Everything in Investigate</li>
+          <li>Full architecture review</li>
+          <li>PRs for top fixes</li>
+          <li>30-day follow-up</li>
+          <li>1-hour call</li>
+          <li>Savings guarantee*</li>
+        </ul>
+        <a href="https://gumroad.com/l/YOURPRODUCT" class="pricing-cta pricing-cta-secondary">Contact us</a>
+      </div>
+    </div>
+    <p class="note">*Architect tier: if the audit doesn't identify ≥$200/mo in savings, full refund. Cloud audits use IAM access (preferred) or CSV export (fallback for hesitant buyers).</p>
+  </section>
 
-    <div class="divider"></div>
-
-    <section>
+  <!-- Works on -->
+  <section>
+    <div class="section-header">
       <div class="section-label">Works on any codebase</div>
-      <p>Language-agnostic core (large files, binaries, secrets, dep counts across npm, pip, go, ruby, php, rust, java) plus deep JS/TS rules. Add your own rule in <code>src/rules/</code>.</p>
-      <div class="pill-row">
-        <span class="pill">Next.js</span>
-        <span class="pill">Supabase</span>
-        <span class="pill">Vercel</span>
-        <span class="pill">Python</span>
-        <span class="pill">Go</span>
-        <span class="pill">Rails</span>
-        <span class="pill">Laravel</span>
-        <span class="pill">Rust</span>
-        <span class="pill">Java</span>
-      </div>
-    </section>
+      <h2 class="section-title">Language-agnostic core.<br>Deep rules for JS/TS.</h2>
+      <p class="section-desc">Large files, binaries, secrets, dep counts across npm, pip, go, ruby, php, rust, java — plus deep checks for Next.js, Supabase, and Vercel.</p>
+    </div>
+    <div class="tech-grid">
+      <span class="tech-pill">Next.js</span>
+      <span class="tech-pill">Supabase</span>
+      <span class="tech-pill">Vercel</span>
+      <span class="tech-pill">Python</span>
+      <span class="tech-pill">Go</span>
+      <span class="tech-pill">Rails</span>
+      <span class="tech-pill">Laravel</span>
+      <span class="tech-pill">Rust</span>
+      <span class="tech-pill">Java</span>
+      <span class="tech-pill">Node.js</span>
+    </div>
+  </section>
 
-    <section>
-      <div class="section-label">Open source</div>
-      <p>CostLens is MIT-licensed. The scanner, the skill, and the rules are all open source. Contributions welcome — add a rule in <code>src/rules/</code> by exporting <code>name</code> and <code>run()</code>.</p>
-      <div style="margin-top: 12px;">
-        <a href="https://github.com/YOURUSER/costlens" style="font-size: 0.875rem;">View on GitHub →</a>
-      </div>
-    </section>
-  </main>
+  <!-- Open source -->
+  <section id="open-source">
+    <div class="os-section">
+      <h3>Open source & free</h3>
+      <p>CostLens is MIT-licensed. The scanner, the skill, and all rules are open source. Contributions welcome — add a rule in <code>src/rules/</code> by exporting <code>name</code> and <code>run()</code>.</p>
+      <a href="https://github.com/YOURUSER/costlens">View on GitHub →</a>
+    </div>
+  </section>
 
-  <footer>
-    <span>CostLens · MIT · Free & open source</span>
-    <span>Built for founders paying too much for cloud.</span>
-  </footer>
 </div>
+
+<footer>
+  <div class="wrap" style="padding: 0 32px;">
+    <div class="footer-left">CostLens · MIT · Free & open source</div>
+    <div class="footer-right">
+      <a href="https://github.com/YOURUSER/costlens">GitHub</a>
+      <a href="#pricing">Pricing</a>
+      <a href="#open-source">Open source</a>
+    </div>
+  </div>
+</footer>
+
 </body>
 </html>
