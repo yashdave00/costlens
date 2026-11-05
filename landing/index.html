@@ -7,28 +7,28 @@
 <meta name="description" content="Free open-source scanner for cloud/infra cost leaks. N+1 queries, uncached fetches, heavy bundles. Agent-ready fix report in seconds." />
 <link rel="preconnect" href="https://fonts.googleapis.com" />
 <link rel="preconnect" href="https://fonts.gstatic.com" crossorigin />
-<link href="https://fonts.googleapis.com/css2?family=Inter:wght@300;400;450;500;550;600;700;800&family=JetBrains+Mono:wght@400;500;600&display=swap" rel="stylesheet" />
+<link href="https://fonts.googleapis.com/css2?family=Space+Grotesk:wght@300;400;500;600;700&family=JetBrains+Mono:wght@400;500;600&display=swap" rel="stylesheet" />
 <style>
   :root {
-    --bg: #030305;
-    --bg-elevated: #0a0a0f;
+    --bg: #0d0d0d;
+    --bg-elevated: #121212;
     --bg-card: rgba(255, 255, 255, 0.03);
     --bg-card-hover: rgba(255, 255, 255, 0.06);
-    --fg: #fafafa;
-    --fg-secondary: #a1a1aa;
-    --fg-muted: #52525b;
+    --fg: #bebebe;
+    --fg-secondary: #8a8a8d;
+    --fg-muted: #555555;
     --border: rgba(255, 255, 255, 0.06);
     --border-hover: rgba(255, 255, 255, 0.12);
-    --accent: #3b82f6;
-    --accent-bright: #60a5fa;
-    --accent-glow: rgba(59, 130, 246, 0.4);
-    --green: #22c55e;
-    --green-glow: rgba(34, 197, 94, 0.4);
-    --orange: #f97316;
-    --orange-glow: rgba(249, 115, 22, 0.4);
-    --red: #ef4444;
-    --purple: #a855f7;
-    --purple-glow: rgba(168, 85, 247, 0.4);
+    --accent: #e68e0d;
+    --accent-bright: #f59e0b;
+    --accent-glow: rgba(230, 142, 13, 0.4);
+    --green: #FFC107;
+    --green-glow: rgba(255, 193, 7, 0.4);
+    --orange: #c63d3d;
+    --orange-glow: rgba(198, 61, 61, 0.4);
+    --red: #D35F5F;
+    --purple: #D35F5F;
+    --purple-glow: rgba(211, 95, 95, 0.4);
     --code-bg: #08080a;
     --glass: rgba(255, 255, 255, 0.02);
     --glass-border: rgba(255, 255, 255, 0.08);
@@ -36,7 +36,7 @@
   * { box-sizing: border-box; margin: 0; padding: 0; }
   html { scroll-behavior: smooth; }
   body {
-    font-family: 'Inter', -apple-system, BlinkMacSystemFont, 'Segoe UI', sans-serif;
+    font-family: 'Space Grotesk', -apple-system, BlinkMacSystemFont, 'Segoe UI', sans-serif;
     background: var(--bg);
     color: var(--fg);
     line-height: 1.6;
@@ -51,9 +51,9 @@
   /* Animated background */
   .bg-canvas { position: fixed; top: 0; left: 0; width: 100%; height: 100%; z-index: 0; pointer-events: none; overflow: hidden; }
   .bg-orb { position: absolute; border-radius: 50%; filter: blur(120px); opacity: 0.4; animation: float 20s ease-in-out infinite; }
-  .bg-orb-1 { width: 600px; height: 600px; background: radial-gradient(circle, rgba(59,130,246,0.3) 0%, transparent 70%); top: -200px; left: -100px; }
-  .bg-orb-2 { width: 500px; height: 500px; background: radial-gradient(circle, rgba(168,85,247,0.25) 0%, transparent 70%); top: 40%; right: -150px; animation-delay: -7s; animation-duration: 25s; }
-  .bg-orb-3 { width: 400px; height: 400px; background: radial-gradient(circle, rgba(34,197,94,0.2) 0%, transparent 70%); bottom: -100px; left: 30%; animation-delay: -14s; animation-duration: 22s; }
+  .bg-orb-1 { width: 600px; height: 600px; background: radial-gradient(circle, rgba(230,142,13,0.25) 0%, transparent 70%); top: -200px; left: -100px; }
+  .bg-orb-2 { width: 500px; height: 500px; background: radial-gradient(circle, rgba(198,61,61,0.2) 0%, transparent 70%); top: 40%; right: -150px; animation-delay: -7s; animation-duration: 25s; }
+  .bg-orb-3 { width: 400px; height: 400px; background: radial-gradient(circle, rgba(255,193,7,0.15) 0%, transparent 70%); bottom: -100px; left: 30%; animation-delay: -14s; animation-duration: 22s; }
   .bg-grid { position: absolute; top: 0; left: 0; width: 100%; height: 100%; background-image: linear-gradient(rgba(255,255,255,0.015) 1px, transparent 1px), linear-gradient(90deg, rgba(255,255,255,0.015) 1px, transparent 1px); background-size: 80px 80px; mask-image: radial-gradient(ellipse 70% 60% at 50% 30%, black 20%, transparent 100%); -webkit-mask-image: radial-gradient(ellipse 70% 60% at 50% 30%, black 20%, transparent 100%); }
   @keyframes float { 0%, 100% { transform: translate(0, 0) scale(1); } 25% { transform: translate(30px, -40px) scale(1.05); } 50% { transform: translate(-20px, 20px) scale(0.95); } 75% { transform: translate(40px, 30px) scale(1.02); } }
 
@@ -83,7 +83,7 @@
   .hero-badge { display: inline-flex; align-items: center; gap: 8px; background: var(--glass); border: 1px solid var(--glass-border); backdrop-filter: blur(10px); border-radius: 999px; padding: 8px 16px 8px 10px; font-size: 0.8rem; color: var(--fg-secondary); margin-bottom: 32px; font-weight: 500; }
   .hero-badge .dot { width: 8px; height: 8px; background: var(--green); border-radius: 50%; box-shadow: 0 0 12px var(--green-glow); animation: pulse 2s ease-in-out infinite; }
   @keyframes pulse { 0%, 100% { opacity: 1; transform: scale(1); } 50% { opacity: 0.6; transform: scale(0.85); } }
-  .hero h1 .gradient-text { background: linear-gradient(135deg, var(--accent-bright) 0%, var(--purple) 50%, var(--green) 100%); -webkit-background-clip: text; -webkit-text-fill-color: transparent; background-clip: text; background-size: 200% 200%; animation: gradient-shift 8s ease infinite; }
+  .hero h1 .gradient-text { background: linear-gradient(135deg, var(--accent-bright) 0%, var(--orange) 50%, var(--green) 100%); -webkit-background-clip: text; -webkit-text-fill-color: transparent; background-clip: text; background-size: 200% 200%; animation: gradient-shift 8s ease infinite; }
   @keyframes gradient-shift { 0%, 100% { background-position: 0% 50%; } 50% { background-position: 100% 50%; } }
   .hero-sub { font-size: 1.25rem; color: var(--fg-secondary); max-width: 640px; margin: 24px 0 40px; line-height: 1.7; }
   .cta-row { display: flex; gap: 12px; flex-wrap: wrap; align-items: center; }
@@ -100,7 +100,7 @@
   .install-box .prompt { color: var(--fg-muted); user-select: none; }
   .install-box .cmd { color: var(--fg); font-weight: 500; }
   .stats-bar { display: flex; gap: 64px; margin-top: 80px; padding-top: 48px; border-top: 1px solid var(--border); }
-  .stat-value { font-size: 2.5rem; font-weight: 800; letter-spacing: -0.03em; line-height: 1; background: linear-gradient(135deg, var(--fg) 0%, var(--fg-secondary) 100%); -webkit-background-clip: text; -webkit-text-fill-color: transparent; background-clip: text; }
+  .stat-value { font-size: 2.5rem; font-weight: 800; letter-spacing: -0.03em; line-height: 1; background: linear-gradient(135deg, var(--accent-bright) 0%, var(--fg) 100%); -webkit-background-clip: text; -webkit-text-fill-color: transparent; background-clip: text; }
   .stat-label { font-size: 0.8rem; color: var(--fg-muted); margin-top: 8px; font-weight: 500; text-transform: uppercase; letter-spacing: 0.08em; }
 
   /* Social proof */
@@ -140,7 +140,7 @@
 
   /* Code window */
   .code-window { background: var(--code-bg); border: 1px solid var(--border); border-radius: 16px; overflow: hidden; margin-top: 48px; box-shadow: 0 40px 80px rgba(0,0,0,0.5); position: relative; }
-  .code-window::before { content: ''; position: absolute; top: 0; left: 0; right: 0; height: 1px; background: linear-gradient(90deg, transparent, var(--accent), var(--purple), transparent); }
+  .code-window::before { content: ''; position: absolute; top: 0; left: 0; right: 0; height: 1px; background: linear-gradient(90deg, transparent, var(--accent), var(--orange), transparent); }
   .code-window-header { display: flex; align-items: center; gap: 8px; padding: 14px 20px; border-bottom: 1px solid var(--border); background: var(--bg-elevated); }
   .code-window-dot { width: 12px; height: 12px; border-radius: 50%; }
   .code-window-dot:nth-child(1) { background: #ff5f57; }
