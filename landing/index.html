@@ -661,9 +661,9 @@
         your codebase is <span class="gradient-text">burning.</span>
       </h1>
       <p class="hero-sub fade-in fade-in-delay-2">
-        CostLens scans any repo for cost leaks — <strong>N+1 queries</strong>, uncached fetches,
-        heavy deps in serverless bundles, Supabase <code>select("*")</code>, unoptimized images,
-        committed binaries — and emits an <strong>agent-ready fix report</strong> in seconds.
+        CostLens scans any repo for cost leaks: N+1 queries, uncached fetches, heavy deps
+        in serverless bundles, Supabase <code>select("*")</code>, unoptimized images, committed
+        binaries. It emits an <strong>agent-ready fix report</strong> in seconds.
       </p>
       <div class="cta-row fade-in fade-in-delay-3">
         <a href="https://github.com/YOURUSER/costlens" class="cta cta-primary">
@@ -702,24 +702,24 @@
   <section id="features">
     <div class="section-header">
       <div class="section-label">What it catches</div>
-      <h2 class="section-title">Six categories of cost leaks,<br>found automatically.</h2>
-      <p class="section-desc">Each finding includes file:line, estimated impact, and a fix prompt you can paste into your coding agent.</p>
+      <h2 class="section-title">Six categories of cost leaks.</h2>
+      <p class="section-desc">Each finding includes file:line, estimated savings, and a fix prompt you can paste into Claude Code or Cursor.</p>
     </div>
     <div class="feature-grid">
       <div class="feature-card">
         <div class="feature-icon">🔍</div>
         <h3>N+1 queries</h3>
-        <p>DB calls inside loops multiply with data size. 10–1000× more calls than needed. Batch with <code>.in()</code> or joins.</p>
+        <p>DB calls inside loops multiply with data size. Batch with <code>.in()</code> or joins.</p>
       </div>
       <div class="feature-card">
         <div class="feature-icon">⚡</div>
         <h3>Missing cache</h3>
-        <p>Uncached fetches hammer your origin and database on every request. Add <code>revalidate</code> or ISR.</p>
+        <p>Uncached fetches hit your origin and database on every request. Add <code>revalidate</code> or ISR.</p>
       </div>
       <div class="feature-card">
         <div class="feature-icon">📦</div>
         <h3>Heavy bundles</h3>
-        <p>moment, lodash, puppeteer in client or serverless routes inflate cold starts and bundle size.</p>
+        <p>moment, lodash, and puppeteer in client or serverless routes inflate cold starts.</p>
       </div>
       <div class="feature-card">
         <div class="feature-icon">🗄️</div>
@@ -729,12 +729,12 @@
       <div class="feature-card">
         <div class="feature-icon">🖼️</div>
         <h3>Image bloat</h3>
-        <p>Raw <code>&lt;img&gt;</code> tags and oversized assets in <code>public/</code>. Cut bandwidth 30–70%.</p>
+        <p>Raw <code>&lt;img&gt;</code> tags and oversized assets in <code>public/</code>. Cut bandwidth 30 to 70%.</p>
       </div>
       <div class="feature-card">
         <div class="feature-icon">🧹</div>
         <h3>Repo bloat</h3>
-        <p>Committed binaries, secrets, node_modules, and excessive dependencies. Shrink clones and CI.</p>
+        <p>Committed binaries, secrets, node_modules, excessive dependencies. Shrink clones and CI.</p>
       </div>
     </div>
   </section>
@@ -780,8 +780,8 @@
   <section id="pricing">
     <div class="section-header">
       <div class="section-label">Pricing</div>
-      <h2 class="section-title">Start free. Upgrade when you want someone to fix it.</h2>
-      <p class="section-desc">The scanner and skill are free and open source. Paid tiers add cloud audits, correlation, and deep architecture reviews.</p>
+      <h2 class="section-title">Free scanner. Paid audits when you want it fixed.</h2>
+      <p class="section-desc">The scanner and skill are free. Paid tiers add cloud audits, correlation, and architecture reviews.</p>
     </div>
     <div class="pricing-grid">
       <div class="pricing-card tier-scout">
@@ -842,7 +842,7 @@
     <div class="section-header">
       <div class="section-label">Works on any codebase</div>
       <h2 class="section-title">Language-agnostic core.<br>Deep rules for JS/TS.</h2>
-      <p class="section-desc">Large files, binaries, secrets, dep counts across npm, pip, go, ruby, php, rust, java — plus deep checks for Next.js, Supabase, and Vercel.</p>
+      <p class="section-desc">Large files, binaries, secrets, dep counts across npm, pip, go, ruby, php, rust, and java. Plus deep checks for Next.js, Supabase, and Vercel.</p>
     </div>
     <div class="tech-grid">
       <span class="tech-pill">Next.js</span>
@@ -862,7 +862,7 @@
   <section id="open-source">
     <div class="os-section">
       <h3>Open source & free</h3>
-      <p>CostLens is MIT-licensed. The scanner, the skill, and all rules are open source. Contributions welcome — add a rule in <code>src/rules/</code> by exporting <code>name</code> and <code>run()</code>.</p>
+      <p>MIT-licensed. The scanner, skill, and all rules are open source. Add a rule in <code>src/rules/</code> by exporting <code>name</code> and <code>run()</code>.</p>
       <a href="https://github.com/YOURUSER/costlens">View on GitHub →</a>
     </div>
   </section>
@@ -875,7 +875,6 @@
     <div class="footer-right">
       <a href="https://github.com/YOURUSER/costlens">GitHub</a>
       <a href="#pricing">Pricing</a>
-      <a href="#open-source">Open source</a>
     </div>
   </div>
 </footer>
