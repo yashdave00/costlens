@@ -3,126 +3,466 @@
 <head>
 <meta charset="UTF-8" />
 <meta name="viewport" content="width=device-width, initial-scale=1.0" />
-<title>CostLens — Find cloud cost leaks in your codebase</title>
+<title>CostLens — Find the cloud money your codebase is burning</title>
 <meta name="description" content="Free open-source scanner for cloud/infra cost leaks in vibe-coded apps. N+1 queries, uncached fetches, heavy bundles, Supabase leaks. Get an agent-ready fix report in seconds." />
+<link rel="preconnect" href="https://fonts.googleapis.com" />
+<link rel="preconnect" href="https://fonts.gstatic.com" crossorigin />
+<link href="https://fonts.googleapis.com/css2?family=Inter:wght@400;450;500;550;600&family=JetBrains+Mono:wght@400;500&display=swap" rel="stylesheet" />
 <style>
-  :root { --bg:#0b0d12; --card:#141821; --fg:#e8ecf4; --muted:#9aa4b2; --accent:#5b8def; --accent2:#3dd68c; }
-  *{box-sizing:border-box}
-  body{margin:0;font-family:system-ui,-apple-system,Segoe UI,Roboto,sans-serif;background:var(--bg);color:var(--fg);line-height:1.6}
-  .wrap{max-width:920px;margin:0 auto;padding:40px 24px}
-  h1{font-size:clamp(2rem,5vw,3.2rem);margin:0 0 12px}
-  .sub{color:var(--muted);font-size:1.15rem;max-width:640px}
-  .cta{display:inline-block;background:var(--accent);color:#fff;padding:14px 22px;border-radius:8px;text-decoration:none;font-weight:600;margin:8px 8px 8px 0}
-  .cta2{background:transparent;border:1px solid #2a3142;color:var(--fg)}
-  .card{background:var(--card);border:1px solid #1f2433;border-radius:12px;padding:24px;margin:24px 0}
-  .grid{display:grid;grid-template-columns:repeat(auto-fit,minmax(240px,1fr));gap:16px}
-  .pill{display:inline-block;background:#1f2433;color:var(--muted);padding:4px 10px;border-radius:999px;font-size:.85rem;margin:4px 4px 0 0}
-  code{background:#1f2433;padding:2px 6px;border-radius:4px;font-size:.9rem}
-  pre{background:#0f1219;border:1px solid #1f2433;border-radius:8px;padding:16px;overflow:auto}
-  .price{font-size:2rem;font-weight:700;color:var(--accent2)}
-  footer{color:var(--muted);font-size:.9rem;margin-top:48px;text-align:center}
+  :root {
+    --bg: #fafafa;
+    --fg: #111;
+    --muted: #6b7280;
+    --muted-light: #9ca3af;
+    --border: #e5e7eb;
+    --border-strong: #d1d5db;
+    --card: #ffffff;
+    --accent: #2563eb;
+    --accent-hover: #1d4ed8;
+    --green: #16a34a;
+    --red: #dc2626;
+    --orange: #ea580c;
+    --yellow: #ca8a04;
+    --code-bg: #f4f4f5;
+  }
+  * { box-sizing: border-box; margin: 0; padding: 0; }
+  html { scroll-behavior: smooth; }
+  body {
+    font-family: 'Inter', -apple-system, BlinkMacSystemFont, 'Segoe UI', sans-serif;
+    background: var(--bg);
+    color: var(--fg);
+    line-height: 1.6;
+    -webkit-font-smoothing: antialiased;
+    -moz-osx-font-smoothing: grayscale;
+  }
+  .wrap {
+    max-width: 680px;
+    margin: 0 auto;
+    padding: 80px 24px 120px;
+  }
+  /* Typography */
+  h1 {
+    font-size: clamp(2rem, 5vw, 2.75rem);
+    font-weight: 550;
+    line-height: 1.15;
+    letter-spacing: -0.02em;
+    margin-bottom: 16px;
+  }
+  h2 {
+    font-size: 1.25rem;
+    font-weight: 550;
+    letter-spacing: -0.01em;
+    margin-bottom: 12px;
+    margin-top: 48px;
+  }
+  h3 {
+    font-size: 1rem;
+    font-weight: 550;
+    margin-bottom: 8px;
+  }
+  p { color: var(--muted); font-size: 1.05rem; }
+  a { color: var(--accent); text-decoration: none; }
+  a:hover { text-decoration: underline; text-underline-offset: 3px; }
+  code {
+    font-family: 'JetBrains Mono', 'SF Mono', monospace;
+    font-size: 0.875em;
+    background: var(--code-bg);
+    padding: 2px 6px;
+    border-radius: 4px;
+    color: var(--fg);
+  }
+  /* Header */
+  header {
+    display: flex;
+    align-items: center;
+    justify-content: space-between;
+    margin-bottom: 64px;
+    padding-bottom: 24px;
+    border-bottom: 1px solid var(--border);
+  }
+  .logo {
+    font-weight: 600;
+    font-size: 0.95rem;
+    color: var(--fg);
+    text-decoration: none;
+    letter-spacing: -0.01em;
+  }
+  .logo:hover { text-decoration: none; opacity: 0.7; }
+  .header-link {
+    font-size: 0.875rem;
+    color: var(--muted);
+  }
+  .header-link:hover { color: var(--fg); text-decoration: none; }
+  /* Hero */
+  .hero-sub {
+    font-size: 1.125rem;
+    color: var(--muted);
+    max-width: 560px;
+    margin-bottom: 32px;
+    line-height: 1.7;
+  }
+  .cta-row {
+    display: flex;
+    gap: 12px;
+    flex-wrap: wrap;
+    align-items: center;
+    margin-bottom: 16px;
+  }
+  .cta {
+    display: inline-flex;
+    align-items: center;
+    gap: 6px;
+    background: var(--fg);
+    color: #fff;
+    padding: 10px 18px;
+    border-radius: 6px;
+    font-size: 0.9rem;
+    font-weight: 500;
+    text-decoration: none;
+    transition: opacity 0.15s, transform 0.15s;
+  }
+  .cta:hover { opacity: 0.85; text-decoration: none; transform: translateY(-1px); }
+  .cta-secondary {
+    background: transparent;
+    color: var(--fg);
+    border: 1px solid var(--border-strong);
+  }
+  .cta-secondary:hover { background: var(--code-bg); }
+  .install-box {
+    display: inline-flex;
+    align-items: center;
+    gap: 8px;
+    background: var(--code-bg);
+    border: 1px solid var(--border);
+    border-radius: 6px;
+    padding: 8px 14px;
+    font-family: 'JetBrains Mono', monospace;
+    font-size: 0.85rem;
+    color: var(--fg);
+    margin-top: 8px;
+  }
+  .install-box .prompt { color: var(--muted-light); user-select: none; }
+  /* Sections */
+  section { margin-top: 72px; }
+  .section-label {
+    font-size: 0.75rem;
+    font-weight: 600;
+    text-transform: uppercase;
+    letter-spacing: 0.08em;
+    color: var(--muted-light);
+    margin-bottom: 16px;
+  }
+  /* Feature grid */
+  .feature-grid {
+    display: grid;
+    grid-template-columns: 1fr 1fr;
+    gap: 1px;
+    background: var(--border);
+    border: 1px solid var(--border);
+    border-radius: 8px;
+    overflow: hidden;
+    margin-top: 16px;
+  }
+  .feature-item {
+    background: var(--card);
+    padding: 20px;
+  }
+  .feature-item strong {
+    display: block;
+    font-size: 0.9rem;
+    font-weight: 550;
+    margin-bottom: 4px;
+  }
+  .feature-item span {
+    font-size: 0.825rem;
+    color: var(--muted);
+    line-height: 1.5;
+  }
+  /* Code block */
+  .code-block {
+    background: #18181b;
+    border-radius: 8px;
+    padding: 20px 24px;
+    margin-top: 16px;
+    overflow-x: auto;
+    font-family: 'JetBrains Mono', monospace;
+    font-size: 0.8rem;
+    line-height: 1.7;
+    color: #e4e4e7;
+  }
+  .code-block .comment { color: #71717a; }
+  .code-block .keyword { color: #60a5fa; }
+  .code-block .string { color: #86efac; }
+  .code-block .number { color: #fbbf24; }
+  .code-block .severity-critical { color: #f87171; font-weight: 600; }
+  .code-block .severity-high { color: #fb923c; font-weight: 600; }
+  .code-block .severity-medium { color: #facc15; font-weight: 600; }
+  /* Pricing table */
+  .pricing-table {
+    margin-top: 16px;
+    border: 1px solid var(--border);
+    border-radius: 8px;
+    overflow: hidden;
+  }
+  .pricing-row {
+    display: grid;
+    grid-template-columns: 100px 1fr;
+    gap: 16px;
+    padding: 20px 24px;
+    border-bottom: 1px solid var(--border);
+    background: var(--card);
+    transition: background 0.15s;
+  }
+  .pricing-row:last-child { border-bottom: none; }
+  .pricing-row:hover { background: #f9fafb; }
+  .pricing-tier {
+    font-weight: 600;
+    font-size: 0.95rem;
+  }
+  .pricing-price {
+    font-size: 1.5rem;
+    font-weight: 600;
+    letter-spacing: -0.02em;
+    line-height: 1;
+    margin-bottom: 2px;
+  }
+  .pricing-features {
+    list-style: none;
+    font-size: 0.875rem;
+    color: var(--muted);
+  }
+  .pricing-features li {
+    padding: 2px 0;
+    display: flex;
+    align-items: baseline;
+    gap: 8px;
+  }
+  .pricing-features li::before {
+    content: "—";
+    color: var(--muted-light);
+    flex-shrink: 0;
+  }
+  /* Tier colors */
+  .tier-scout .pricing-price { color: var(--fg); }
+  .tier-probe .pricing-price { color: var(--accent); }
+  .tier-investigate .pricing-price { color: var(--orange); }
+  .tier-architect .pricing-price { color: var(--green); }
+  /* Note */
+  .note {
+    font-size: 0.8rem;
+    color: var(--muted-light);
+    margin-top: 12px;
+    line-height: 1.5;
+  }
+  /* Pills */
+  .pill-row {
+    display: flex;
+    flex-wrap: wrap;
+    gap: 6px;
+    margin-top: 12px;
+  }
+  .pill {
+    font-size: 0.75rem;
+    color: var(--muted);
+    background: var(--code-bg);
+    border: 1px solid var(--border);
+    padding: 4px 10px;
+    border-radius: 999px;
+    font-weight: 500;
+  }
+  /* Footer */
+  footer {
+    margin-top: 96px;
+    padding-top: 24px;
+    border-top: 1px solid var(--border);
+    font-size: 0.8rem;
+    color: var(--muted-light);
+    display: flex;
+    justify-content: space-between;
+    flex-wrap: wrap;
+    gap: 8px;
+  }
+  /* Divider */
+  .divider {
+    height: 1px;
+    background: var(--border);
+    margin: 48px 0;
+  }
+  /* Responsive */
+  @media (max-width: 640px) {
+    .wrap { padding: 48px 20px 80px; }
+    header { margin-bottom: 48px; }
+    section { margin-top: 56px; }
+    .feature-grid { grid-template-columns: 1fr; }
+    .pricing-row { grid-template-columns: 1fr; gap: 8px; }
+    .cta-row { flex-direction: column; align-items: stretch; }
+    .cta { justify-content: center; }
+  }
 </style>
 </head>
 <body>
 <div class="wrap">
-  <h1>Find the cloud money your codebase is burning.</h1>
-  <p class="sub">CostLens scans any repo for cost leaks — N+1 queries, uncached fetches, heavy deps in serverless bundles, Supabase <code>select("*")</code>, unoptimized images, committed binaries — and emits an agent-ready fix report in seconds.</p>
-  <div>
-    <a class="cta" href="https://github.com/YOURUSER/costlens">Get the free scanner →</a>
-    <a class="cta cta2" href="#audit">Book a deep audit</a>
-  </div>
-  <p style="color:var(--muted);margin-top:8px"><code>npx costlens scan .</code></p>
 
-  <div class="card">
-    <h2>What it catches</h2>
-    <div class="grid">
-      <div><strong>N+1 queries</strong><br><span style="color:var(--muted)">DB calls inside loops → 10–1000× more calls.</span></div>
-      <div><strong>Missing cache</strong><br><span style="color:var(--muted)">Uncached fetches hammer origin + DB.</span></div>
-      <div><strong>Heavy bundles</strong><br><span style="color:var(--muted)">moment/lodash/puppeteer in client or routes.</span></div>
-      <div><strong>Supabase leaks</strong><br><span style="color:var(--muted)"><code>select("*")</code>, no <code>.limit()</code>, realtime overuse.</span></div>
-      <div><strong>Image bloat</strong><br><span style="color:var(--muted)">Raw <code>&lt;img&gt;</code>, oversized public assets.</span></div>
-      <div><strong>Repo bloat</strong><br><span style="color:var(--muted)">Committed binaries, secrets, node_modules.</span></div>
+  <header>
+    <a href="/" class="logo">CostLens</a>
+    <a href="https://github.com/YOURUSER/costlens" class="header-link">GitHub →</a>
+  </header>
+
+  <main>
+    <h1>Find the cloud money<br>your codebase is burning.</h1>
+    <p class="hero-sub">
+      CostLens scans any repo for cost leaks — N+1 queries, uncached fetches, heavy
+      deps in serverless bundles, Supabase <code>select("*")</code>, unoptimized
+      images, committed binaries — and emits an agent-ready fix report in seconds.
+    </p>
+
+    <div class="cta-row">
+      <a href="https://github.com/YOURUSER/costlens" class="cta">Get the free scanner</a>
+      <a href="#pricing" class="cta cta-secondary">View pricing</a>
     </div>
-  </div>
-
-  <div class="card">
-    <h2>Agent-ready output</h2>
-    <p style="color:var(--muted)">Every finding ships with a <strong>fix prompt</strong> you paste into Claude Code / Cursor to auto-apply. Plus a combined "Agent Fix Block" at the end.</p>
-    <pre><code>$ npx costlens scan ./my-app
-
-# CostLens Report
-Files scanned: 42
-Findings: 11 (critical:1, high:3, medium:5, low:2)
-
-## 🔴 CRITICAL
-### Possible secrets committed (2 files)
-...
-**Fix prompt (paste into Claude Code / Cursor):**
-  Remove secrets from these files and rotate...</code></pre>
-  </div>
-
-  <div class="card" id="audit">
-    <h2>Deep Codebase Cost Audit</h2>
-    <p style="color:var(--muted)">CostLens finds the obvious leaks. I'll find the rest, fix the top ones, and tell you what you'll save.</p>
-    <div class="grid">
-      <div>
-        <div class="price">$29</div>
-        <strong>Scout</strong>
-        <ul style="color:var(--muted)">
-          <li>CostLens agent skill</li>
-          <li>Curated fix templates</li>
-          <li>Benchmark data</li>
-          <li>Advanced rules</li>
-          <li>Self-serve</li>
-        </ul>
-      </div>
-      <div>
-        <div class="price">$99</div>
-        <strong>Probe</strong>
-        <ul style="color:var(--muted)">
-          <li>Everything in Scout</li>
-          <li>Full cloud cost audit (IAM-based preferred, CSV fallback)</li>
-          <li>Top-5 waste categories with $ estimates</li>
-          <li>Right-sizing recs</li>
-          <li>RI/SP suggestions</li>
-          <li>48h turnaround</li>
-        </ul>
-      </div>
-      <div>
-        <div class="price">$199</div>
-        <strong>Investigate</strong>
-        <ul style="color:var(--muted)">
-          <li>Everything in Probe</li>
-          <li>Code↔cloud correlation</li>
-          <li>DB query review (N+1, indexes, unbounded queries)</li>
-          <li>PRs for top 3 fixes</li>
-        </ul>
-      </div>
-      <div>
-        <div class="price">$2000</div>
-        <strong>Architect</strong>
-        <ul style="color:var(--muted)">
-          <li>Everything in Investigate</li>
-          <li>Full architecture review (cost, latency, throughput)</li>
-          <li>PRs for top fixes</li>
-          <li>30-day follow-up</li>
-          <li>1h call</li>
-          <li>Savings guarantee*</li>
-        </ul>
-      </div>
+    <div class="install-box">
+      <span class="prompt">$</span> npx costlens scan .
     </div>
-    <p style="color:var(--muted);font-size:.85rem">*If the Architect audit doesn't identify ≥$200/mo in savings, full refund.</p>
-    <a class="cta" href="https://gumroad.com/l/YOURPRODUCT">Book the audit →</a>
-  </div>
 
-  <div class="card">
-    <h2>Works on any codebase</h2>
-    <p style="color:var(--muted)">Language-agnostic core (large files, binaries, secrets, dep counts across npm/pip/go/ruby/php/rust/java) plus deep JS/TS rules. Add your own rule in <code>src/rules/</code>.</p>
-    <span class="pill">Next.js</span><span class="pill">Supabase</span><span class="pill">Vercel</span><span class="pill">Python</span><span class="pill">Go</span><span class="pill">Rails</span><span class="pill">Laravel</span>
-  </div>
+    <section>
+      <div class="section-label">What it catches</div>
+      <div class="feature-grid">
+        <div class="feature-item">
+          <strong>N+1 queries</strong>
+          <span>DB calls inside loops multiply with data size. 10–1000× more calls than needed.</span>
+        </div>
+        <div class="feature-item">
+          <strong>Missing cache</strong>
+          <span>Uncached fetches hammer your origin and database on every request.</span>
+        </div>
+        <div class="feature-item">
+          <strong>Heavy bundles</strong>
+          <span>moment, lodash, puppeteer in client or serverless routes inflate cold starts.</span>
+        </div>
+        <div class="feature-item">
+          <strong>Supabase leaks</strong>
+          <span><code>select("*")</code>, unbounded queries, realtime overuse, untransformed storage URLs.</span>
+        </div>
+        <div class="feature-item">
+          <strong>Image bloat</strong>
+          <span>Raw <code>&lt;img&gt;</code> tags and oversized assets in <code>public/</code>.</span>
+        </div>
+        <div class="feature-item">
+          <strong>Repo bloat</strong>
+          <span>Committed binaries, secrets, node_modules, and excessive dependencies.</span>
+        </div>
+      </div>
+    </section>
+
+    <section>
+      <div class="section-label">Agent-ready output</div>
+      <p style="margin-bottom: 4px;">Every finding ships with a fix prompt you paste into Claude Code or Cursor to auto-apply. A combined Agent Fix Block sits at the end.</p>
+      <div class="code-block">
+<span class="comment">$ npx costlens scan ./my-app</span>
+
+<span class="comment"># CostLens Report</span>
+<span class="comment">Files scanned: 42</span>
+<span class="comment">Findings: 11 (critical:1, high:3, medium:5, low:2)</span>
+
+<span class="severity-critical">## 🔴 CRITICAL</span>
+<span class="severity-critical">### Possible secrets committed (2 files)</span>
+<span class="comment">...</span>
+<span class="keyword">**Fix prompt (paste into Claude Code / Cursor):**</span>
+  Remove secrets from these files and rotate...
+      </div>
+    </section>
+
+    <section id="pricing">
+      <div class="section-label">Pricing</div>
+      <p style="margin-bottom: 16px;">Start free. Upgrade when you want someone to fix it.</p>
+      <div class="pricing-table">
+        <div class="pricing-row tier-scout">
+          <div>
+            <div class="pricing-price">$29</div>
+            <div class="pricing-tier">Scout</div>
+          </div>
+          <ul class="pricing-features">
+            <li>CostLens agent skill (Claude, Cursor, Codex)</li>
+            <li>Curated fix templates</li>
+            <li>Benchmark data</li>
+            <li>Advanced rules not in free CLI</li>
+            <li>Self-serve</li>
+          </ul>
+        </div>
+        <div class="pricing-row tier-probe">
+          <div>
+            <div class="pricing-price">$99</div>
+            <div class="pricing-tier">Probe</div>
+          </div>
+          <ul class="pricing-features">
+            <li>Everything in Scout</li>
+            <li>Full cloud cost audit (IAM or CSV)</li>
+            <li>Top-5 waste categories with $ estimates</li>
+            <li>Right-sizing recommendations</li>
+            <li>RI / Savings Plan suggestions</li>
+            <li>48h turnaround</li>
+          </ul>
+        </div>
+        <div class="pricing-row tier-investigate">
+          <div>
+            <div class="pricing-price">$199</div>
+            <div class="pricing-tier">Investigate</div>
+          </div>
+          <ul class="pricing-features">
+            <li>Everything in Probe</li>
+            <li>Code ↔ cloud correlation</li>
+            <li>DB query review (N+1, indexes, unbounded)</li>
+            <li>PRs for top 3 fixes</li>
+          </ul>
+        </div>
+        <div class="pricing-row tier-architect">
+          <div>
+            <div class="pricing-price">$2,000</div>
+            <div class="pricing-tier">Architect</div>
+          </div>
+          <ul class="pricing-features">
+            <li>Everything in Investigate</li>
+            <li>Full architecture review (cost, latency, throughput)</li>
+            <li>PRs for top fixes</li>
+            <li>30-day follow-up</li>
+            <li>1-hour call</li>
+            <li>Savings guarantee*</li>
+          </ul>
+        </div>
+      </div>
+      <p class="note">*Architect tier: if the audit doesn't identify ≥$200/mo in savings, full refund. Cloud audits use IAM access (preferred) or CSV export (fallback for hesitant buyers).</p>
+    </section>
+
+    <div class="divider"></div>
+
+    <section>
+      <div class="section-label">Works on any codebase</div>
+      <p>Language-agnostic core (large files, binaries, secrets, dep counts across npm, pip, go, ruby, php, rust, java) plus deep JS/TS rules. Add your own rule in <code>src/rules/</code>.</p>
+      <div class="pill-row">
+        <span class="pill">Next.js</span>
+        <span class="pill">Supabase</span>
+        <span class="pill">Vercel</span>
+        <span class="pill">Python</span>
+        <span class="pill">Go</span>
+        <span class="pill">Rails</span>
+        <span class="pill">Laravel</span>
+        <span class="pill">Rust</span>
+        <span class="pill">Java</span>
+      </div>
+    </section>
+
+    <section>
+      <div class="section-label">Open source</div>
+      <p>CostLens is MIT-licensed. The scanner, the skill, and the rules are all open source. Contributions welcome — add a rule in <code>src/rules/</code> by exporting <code>name</code> and <code>run()</code>.</p>
+      <div style="margin-top: 12px;">
+        <a href="https://github.com/YOURUSER/costlens" style="font-size: 0.875rem;">View on GitHub →</a>
+      </div>
+    </section>
+  </main>
 
   <footer>
-    CostLens · MIT · Free & open source · Built for founders paying too much for cloud.
+    <span>CostLens · MIT · Free & open source</span>
+    <span>Built for founders paying too much for cloud.</span>
   </footer>
 </div>
 </body>
